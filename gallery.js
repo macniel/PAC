@@ -5,6 +5,7 @@ Gallery = function(array) {
     this.callbackReady = array["callbackReady"];
     this.target = array["target"];
     this.id = array["id"];
+	this.bigger = array["bigger"];
     this.userid = "";
     this.photos = {};
     this.username = array["username"];
@@ -210,7 +211,7 @@ Gallery = function(array) {
     }
     
     this.zoom = function(element) {
-       var e = document.getElementById("bigger").getElementsByTagName("img")[0];
+       var e = document.getElementById(this.bigger).getElementsByTagName("img")[0];
        var n = (parseInt(element.getAttribute("id")) -1),
            v = (parseInt(element.getAttribute("id")) +1);
        document.getElementById("nextBtn").setAttribute("data-link", n );
@@ -218,7 +219,7 @@ Gallery = function(array) {
        document.getElementById("nextBtn").setAttribute("onclick", this.id + ".slide('" + n + "')");
        document.getElementById("prevBtn").setAttribute("onclick", this.id + ".slide('" + v + "')");
 	   this.preloader(e, element.getAttribute("data-original"));
-       var e1 = document.getElementById("bigger").getElementsByTagName("div")[0];
+       var e1 = document.getElementById(this.bigger).getElementsByTagName("div")[0];
        e.setAttribute("data-biggest", element.getAttribute("data-biggest"));
 	   e1.innerHTML = element.getAttribute("title");
        if ( typeof this.callbackZoom == "function" ) {
