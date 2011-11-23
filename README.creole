@@ -1,0 +1,29 @@
+= GalleryTool =
+
+Diese //Javascript// Klasse dient der einfachen implementierung von [http://www.flickr.com/|FlickR] gestützten
+Gallerien ohne dass IDs, wie etwa für Benutzer und Photosets, verwendet werden müssen.
+
+== Installation ==
+
+Die Installation erfolgt durch das einbinden der [/gallery.js] Datei in das Projekte, der Aufruf der
+Klasse erfolgt mit der übergabe eines arrays in dem alle Einstellungen übergeben werden,
+die möglichen Einstellungen sind:
+
+# //target// dies ist der Zielcontainer in dem die Vorschaubilder abgelegt werden sollen
+# //bigger// dies ist der Zielcontainer in dem die größere Ansicht des Bildes angezeigt wreden soll
+# //id// damit mehrere Gallerien auf einer Seite funktionieren können werden IDs verwendet um die unterschiedlichen Konfigurationen zu unterscheiden
+# //username// Name des Benutzer von dem das Photoset angezeigt werden soll
+# //photosetName// Name des Photosets das angezeigt werden soll
+# //lightbox// (Wahrheitswert) deaktiviert das Titelbild
+# //callbackZoom// (Funktion(bild) ) was passieren soll, sobald ein Bild aus den Voransichten vergrößert wird
+# //callbackReady// (Funktion() ) was passieren soll, wenn die Gallerie fertig ist
+# //callbackAddedPhoto// (Funktion(bild) ) was passieren soll, wenn ein Bild in den Voransichten hinzugefügt wird
+
+Sobald das Gallery Objekt erschaffen wurde werden mit der funktion .run() die Abfragen gestartet und die Gallerie wird dargestellt.
+
+Ein Beispielcode ist in der Datei [/seite.html] zu finden
+
+== Kompatibilität zu Bambus CMS ==
+
+Sollte in der betreffenden Bambus CMS version keinen
+Script abschnitt geben, so 
