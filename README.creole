@@ -38,14 +38,22 @@ Ein Beispielcode ist in der Datei [seite.html] zu finden
 
 Es ist wichtig, dass es folgende Elemente auf der Seite wo eine Gallery eingebunden werden soll existieren:
 <div id="**bigger**">
-::in diesem wird die größere Ansicht des Bildes angezeigt
-<div id="**target**">
-::in diesem werden die Voransichten angezeigt
-<a id="nextBtn" onclick="**id**.slide()">
-::mit diesem wird in der Gallerie //zurück// geblättert
-<a id="prevBtn" onclick="**id**.slide()">
-::mit diesem wird in der Gallerie //vorwärts// geblättert
 
+in diesem wird die größere Ansicht des Bildes angezeigt
+
+<div id="**target**">
+
+in diesem werden die Voransichten angezeigt
+
+<a id="nextBtn" onclick="**id**.slide()">
+
+mit diesem wird in der Gallerie //zurück// geblättert
+
+<a id="prevBtn" onclick="**id**.slide()">
+
+mit diesem wird in der Gallerie //vorwärts// geblättert
+
+==== Beispiel ====
 Das Standard design, wie in [seite.html] zu sehen, sieht das folgende Markup vor:
 {{{
 <div id="bigger" style="width:500px">
