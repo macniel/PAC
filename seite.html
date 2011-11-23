@@ -1,0 +1,42 @@
+
+<script type="text/javascript">
+    
+    $("body").ready( function() {
+    $.fn.prettyPhoto();   
+    // "lightbox" : true // aktiviere Lightbox/prettyPhoto funktionalität(deaktiviert das Titelbild)
+    gallery1 = new Gallery({
+      "id" : "gallery1", // Referenz auf diese Gallery
+      "username" : "IBN e.V.", // Benutzername bei FlickR
+      "photosetName" : "IBN-Forum_25_10_2011", // Photoset-(Album) Name
+      "target" : "gallery", // Ziel Fenster in dem die Voransichten angelegt werden sollen
+      "callbackAddedPhoto" : function(a, element) { // Was bei einem hinzugefügten Bild passieren soll (es muss dafür gesorgt werden, dass das Bild anschließend sichtbar ist!)
+        element = $(element).fadeIn(200); 
+      },
+      "callbackZoom" : function(e) { // 
+        $(e).fadeIn();
+      },
+      "callbackZoomBefore" : function(e) {
+        $(e).hide();
+      },
+      /*"callbackReady" : function() { // Was passieren soll wenn die Gallery fertig ist (auskommentieren für "lightbox"
+        $("body").ready(function() {
+          $("#gallery a").attr("rel", "prettyPhoto[blub]");
+          $("#gallery a").prettyPhoto();
+          $("#gallery a").each( function() {
+            $(this).children("img").attr("onclick", "");
+            $(this).attr("href", $(this).children("img").attr("data-original"));
+          });
+        };
+      }*/
+	  
+	});
+    gallery1.run(); // Gallery starten
+  });
+</script>
+<div id="bigger" style="width:500px">
+    <img style="height:334px" onclick="$.prettyPhoto.open(this.getAttribute('data-biggest'),this.title,this.title);"/>
+    <div/>
+</div>
+<a id="nextBtn" href="javascript:;" style="float:left" onclick="gallery1.slide()">Vorheriges</a> <a href="javascript:;" id="prevBtn" style="float:right" onclick="gallery1.slide()">N&auml;chstes</a>
+<div id="gallery" style="display: inline-block; height: 95px; overflow-y: hidden; overflow-x: auto; width:500px; white-space:nowrap; position: relative;">
+</div>
