@@ -1,29 +1,62 @@
 = GalleryTool =
 
-Diese //Javascript// Klasse dient der einfachen implementierung von [http://www.flickr.com/|FlickR] gestützten
-Gallerien ohne dass IDs, wie etwa für Benutzer und Photosets, verwendet werden müssen.
+Diese //Javascript// Klasse dient der einfachen implementierung von [[http://www.flickr.com/|FlickR]] gestÃ¼tzten
+Gallerien ohne dass IDs, wie etwa fÃ¼r Benutzer und Photosets, verwendet werden mÃ¼ssen.
 
 == Installation ==
 
-Die Installation erfolgt durch das einbinden der [/gallery.js] Datei in das Projekte, der Aufruf der
-Klasse erfolgt mit der übergabe eines arrays in dem alle Einstellungen übergeben werden,
-die möglichen Einstellungen sind:
+Die Installation erfolgt durch das einbinden der [[gallery.js]] Datei in das Projekt.
 
-# //target// dies ist der Zielcontainer in dem die Vorschaubilder abgelegt werden sollen
-# //bigger// dies ist der Zielcontainer in dem die größere Ansicht des Bildes angezeigt wreden soll
-# //id// damit mehrere Gallerien auf einer Seite funktionieren können werden IDs verwendet um die unterschiedlichen Konfigurationen zu unterscheiden
-# //username// Name des Benutzer von dem das Photoset angezeigt werden soll
-# //photosetName// Name des Photosets das angezeigt werden soll
-# //lightbox// (Wahrheitswert) deaktiviert das Titelbild
-# //callbackZoom// (Funktion(bild) ) was passieren soll, sobald ein Bild aus den Voransichten vergrößert wird
-# //callbackReady// (Funktion() ) was passieren soll, wenn die Gallerie fertig ist
-# //callbackAddedPhoto// (Funktion(bild) ) was passieren soll, wenn ein Bild in den Voransichten hinzugefügt wird
+=== KompatibilitÃ¤tsprobleme zu Bambus CMS ===
+
+Sollte in der betreffenden Bambus CMS version keinen
+Script abschnitt geben:
+Lade die Datei gallery.js als Datei hoch und binde diese mithilfe des <script src=""> tags ein
+wobei in dem src attribut der Pfad zur [[gallery.js]] Datei eingetragen wird.
+
+== Verwendung ==
+
+Sobald die gallery.js Datei eingebunden ist steht die Klasse Gallery zur verfÃ¼gung
+Klasse erfolgt mit der Ã¼bergabe eines arrays in dem alle Einstellungen Ã¼bergeben werden,
+die mÃ¶glichen Einstellungen sind:
+
+# **target** dies ist der Zielcontainer in dem die Vorschaubilder abgelegt werden sollen
+# **bigger** dies ist der Zielcontainer in dem die grÃ¶ÃŸere Ansicht des Bildes angezeigt werden soll
+# **id** damit mehrere Gallerien auf einer Seite funktionieren kÃ¶nnen werden IDs verwendet um die unterschiedlichen Konfigurationen zu unterscheiden
+# **username** Name des Benutzer von dem das Photoset angezeigt werden soll
+# **photosetName** Name des Photosets das angezeigt werden soll
+# **lightbox** (Wahrheitswert) deaktiviert das Titelbild
+# **callbackZoom** (Funktion(bild) ) was passieren soll, sobald ein Bild aus den Voransichten vergrÃ¶ÃŸert wird
+# **callbackReady** (Funktion() ) was passieren soll, wenn die Gallerie fertig ist
+# **callbackAddedPhoto** (Funktion(bild) ) was passieren soll, wenn ein Bild in den Voransichten hinzugefÃ¼gt wird
 
 Sobald das Gallery Objekt erschaffen wurde werden mit der funktion .run() die Abfragen gestartet und die Gallerie wird dargestellt.
 
-Ein Beispielcode ist in der Datei [/seite.html] zu finden
+Ein Beispielcode ist in der Datei [seite.html] zu finden
 
-== Kompatibilität zu Bambus CMS ==
+=== Markup ===
 
-Sollte in der betreffenden Bambus CMS version keinen
-Script abschnitt geben, so 
+Es ist wichtig, dass es folgende Elemente auf der Seite wo eine Gallery eingebunden werden soll existieren:
+<div id="**bigger**">
+: in diesem wird die grÃ¶ÃŸere Ansicht des Bildes angezeigt
+<div id="**target**">
+: in diesem werden die Voransichten angezeigt
+<a id="nextBtn" onclick="**id**.slide()">
+: mit diesem wird in der Gallerie **zurÃ¼ck** geblÃ¤ttert
+<a id="prevBtn" onclick="**id**.slide()">
+: mit diesem wird in der Gallerie **vorwÃ¤rts** geblÃ¤ttert
+
+Das Standard design, wie in [seite.html] zu sehen, sieht das folgende Markup vor:
+{{{
+<div id="bigger" style="width:500px">
+    <img style="height:334px" onclick="$.prettyPhoto.open(this.getAttribute('data-biggest'),this.title,this.title);"/>
+    <div/>
+</div>
+<a id="nextBtn" href="javascript:;" style="float:left" onclick="gallery1.slide()">Vorheriges</a> <a href="javascript:;" id="prevBtn" style="float:right" onclick="gallery1.slide()">N&auml;chstes</a>
+<div id="gallery" style="display: inline-block; height: 95px; overflow-y: hidden; overflow-x: auto; width:500px; white-space:nowrap; position: relative;">
+</div>
+}}}
+
+== Besonderheiten der Beispieldatei ==
+Die Verwendung der [[seite.html]] Datei erfordert eine installation von [[http://www.no-margin-for-errors.com/projects/prettyphoto-jquery-lightbox-clone/|prettyPhoto]] sowie [[http://www.jquery.com|Query]].
+
