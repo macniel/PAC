@@ -48,22 +48,25 @@ gallery1.run("wrapper");
 Der Rest wird von der Klasse übernommen.
 === Markup ===
 
-Es ist wichtig, dass es folgende Elemente auf der Seite wo eine Gallery eingebunden werden soll existieren:
-<div id="**bigger**">
+Es ist wichtig, dass es folgende Elemente auf der Seite wo eine Gallery eingebunden werden soll existieren.
+
 
 in diesem wird die größere Ansicht des Bildes angezeigt
-
-<div id="**target**">
-
+{{{
+<div id="**bigger**">
+}}}
 in diesem werden die Voransichten angezeigt
-
-<a id="nextBtn" onclick="**id**.slide()">
-
+{{{
+<div id="**target**">
+}}}
 mit diesem wird in der Gallerie //zurück// geblättert
-
-<a id="prevBtn" onclick="**id**.slide()">
-
+{{{
+<a id="nextBtn" onclick="**id**.slide()">
+}}}
 mit diesem wird in der Gallerie //vorwärts// geblättert
+{{{
+<a id="prevBtn" onclick="**id**.slide()">
+}}}
 
 ==== Beispiel ====
 Das Standard design, wie in //seite.html// zu sehen, sieht das folgende Markup vor:
