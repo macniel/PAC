@@ -83,89 +83,96 @@ Gallery = function(array) {
   } 
   this.getPhotoDescription_Helper = function(arr) {
     if ( arr["stat"] == "ok" && typeof this.photos[arr["photo"]["id"]] != "undefined") {
-      img = document.createElement("img");
-
-      img.setAttribute("id", this.size - this.count);
-      img.setAttribute("src", "http://farm" 
-        + this.photos[arr["photo"]["id"]]["farm"]
-        + ".static.flickr.com/" 
-        + this.photos[arr["photo"]["id"]]["server"]
-        +"/" 
-        + this.photos[arr["photo"]["id"]]["id"]
-        + "_" 
-        +this.photos[arr["photo"]["id"]]["secret"]
-        + "_t.jpg");
-      img.setAttribute("data-biggest", "http://farm" 
-        + this.photos[arr["photo"]["id"]]["farm"]
-        + ".static.flickr.com/" 
-        + this.photos[arr["photo"]["id"]]["server"]
-        +"/" 
-        + this.photos[arr["photo"]["id"]]["id"]
-        + "_" 
-        +this.photos[arr["photo"]["id"]]["secret"]
-        + "_b.jpg");
-      img.setAttribute("data-original", "http://farm" 
-        + this.photos[arr["photo"]["id"]]["farm"]
-        + ".static.flickr.com/" 
-        + this.photos[arr["photo"]["id"]]["server"]
-        +"/" 
-        + this.photos[arr["photo"]["id"]]["id"]
-        + "_" 
-        +this.photos[arr["photo"]["id"]]["secret"]
-        + ".jpg");
-      img.setAttribute("alt", arr["photo"]["description"]["_content"]);
-      img.setAttribute("title", arr["photo"]["description"]["_content"]);
-      this.images.push(img.getAttribute("src"));
-	  this.fullImages.push("http://farm" 
-        + this.photos[arr["photo"]["id"]]["farm"]
-        + ".static.flickr.com/" 
-        + this.photos[arr["photo"]["id"]]["server"]
-        +"/" 
-        + this.photos[arr["photo"]["id"]]["id"]
-        + "_" 
-        +this.photos[arr["photo"]["id"]]["secret"]
-        + ".jpg");
-      this.titles.push("");
+		this.images.push("http://farm" 
+			+ this.photos[arr["photo"]["id"]]["farm"]
+			+ ".static.flickr.com/" 
+			+ this.photos[arr["photo"]["id"]]["server"]
+			+"/" 
+			+ this.photos[arr["photo"]["id"]]["id"]
+			+ "_" 
+			+ this.photos[arr["photo"]["id"]]["secret"]
+			+ "_t.jpg");
+		this.fullImages.push("http://farm" 
+			+ this.photos[arr["photo"]["id"]]["farm"]
+			+ ".static.flickr.com/" 
+			+ this.photos[arr["photo"]["id"]]["server"]
+			+"/" 
+			+ this.photos[arr["photo"]["id"]]["id"]
+			+ "_" 
+			+ this.photos[arr["photo"]["id"]]["secret"]
+			+ ".jpg");
+	  this.photos[arr["photo"]["id"]]["description"] = arr["photo"]["description"]["_content"];
+      this.titles.push(arr["photo"]["title"]["_content"]);
       this.descriptions.push(arr["photo"]["description"]["_content"]);
-      if ( this.lightBox != true ) {
-        img.setAttribute("onclick", this.id + ".zoom(this)");
-      }
-      a = document.createElement("a");
-      a.setAttribute("href", "#");
-      a.appendChild(img);
-      if ( typeof this.callbackAddedPhoto == "function" ) {
-        img.style.display = "none";
-      }
-      if ( typeof this.target != "undefined" ) {
-        document.getElementById(this.target).appendChild(a); 
-      } else {
-        document.getElementsByTagName("body")[0].appendChild(a); 
-      }
-      if ( typeof this.callbackAddedPhoto == "function" ) {
-        this.callbackAddedPhoto(a, img);
-      }
       this.decreaseCount();
     }
-      
+    
   }
   
   this.decreaseCount = function() {
     this.count -= 1;
-    var i = 0;
-    if ( this.count <= 0 ) {
+    if ( this.count == 1 ) {
+	  var i = -1; 
       for ( e in this.photos ) {
-        if ( this.photos[e]["isprimary"] == "1" ) {
-          if ( typeof this.lightbox == "undefined" || this.lightbox == "false" || this.lightbox == false ) {
-			    
+		  ++i;
+		  img = document.createElement("img");
+		  img.setAttribute("id", i);
+		  img.setAttribute("src", "http://farm" 
+			+ this.photos[e]["farm"]
+			+ ".static.flickr.com/" 
+			+ this.photos[e]["server"]
+			+"/" 
+			+ this.photos[e]["id"]
+			+ "_" 
+			+ this.photos[e]["secret"]
+			+ "_t.jpg");
+		  img.setAttribute("data-biggest", "http://farm" 
+			+ this.photos[e]["farm"]
+			+ ".static.flickr.com/" 
+			+ this.photos[e]["server"]
+			+"/" 
+			+ this.photos[e]["id"]
+			+ "_" 
+			+ this.photos[e]["secret"]
+			+ "_b.jpg");
+		  img.setAttribute("data-original", "http://farm" 
+			+ this.photos[e]["farm"]
+			+ ".static.flickr.com/" 
+			+ this.photos[e]["server"]
+			+"/" 
+			+ this.photos[e]["id"]
+			+ "_" 
+			+ this.photos[e]["secret"]
+			+ ".jpg");
+		  img.setAttribute("alt", this.photos[e]["description"]);
+		  img.setAttribute("title", this.photos[e]["title"]);
+		  
+		  if ( this.lightBox != true ) {
+			img.setAttribute("onclick", this.id + ".zoom(this)");
+		  }
+		  a = document.createElement("a");
+		  a.setAttribute("href", "#");
+		  a.appendChild(img);
+		  if ( typeof this.callbackAddedPhoto == "function" ) {
+			img.style.display = "none";
+		  }
+		  if ( typeof this.target != "undefined" ) {
+			document.getElementById(this.target).appendChild(a); 
+		  } else {
+			document.getElementsByTagName("body")[0].appendChild(a); 
+		  }
+		  if ( typeof this.callbackAddedPhoto == "function" ) {
+			this.callbackAddedPhoto(a, img);
+		  }
+		  if ( this.photos[e]["isprimary"] == 1 ) {
+			  
             this.zoom(document.getElementById(i));
-          }
-        }
-        i++;
-            
-      }
-    }
-    if ( this.count <= 0 && typeof this.callbackReady == "function") {
-      this.callbackReady();
+       
+		  }
+	  }
+	  if ( typeof this.callbackReady == "function" ) {
+		this.callbackReady();
+	  }
     }
   }
   
