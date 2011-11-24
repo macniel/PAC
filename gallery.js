@@ -4,6 +4,7 @@ Gallery = function(array) {
   this.callbackZoomBefore = array["callbackZoomBefore"];
   this.callbackReady = array["callbackReady"];
   this.target = array["target"];
+  this.template;
   this.id = array["id"];
   this.bigger = array["bigger"];
   this.userid = "";
@@ -18,6 +19,10 @@ Gallery = function(array) {
   this.images = [];
   this.descriptions = [];
   this.titles = [];
+  this.fullImages = [];
+  this.scroller;
+  
+  // Asyncronized Madness
   this.getUserById_Helper = function(arr) {
     if ( arr["stat"] == "ok") {
       this.userid = arr["user"]["nsid"];
@@ -111,6 +116,15 @@ Gallery = function(array) {
       img.setAttribute("alt", arr["photo"]["description"]["_content"]);
       img.setAttribute("title", arr["photo"]["description"]["_content"]);
       this.images.push(img.getAttribute("src"));
+	  this.fullImages.push("http://farm" 
+        + this.photos[arr["photo"]["id"]]["farm"]
+        + ".static.flickr.com/" 
+        + this.photos[arr["photo"]["id"]]["server"]
+        +"/" 
+        + this.photos[arr["photo"]["id"]]["id"]
+        + "_" 
+        +this.photos[arr["photo"]["id"]]["secret"]
+        + ".jpg");
       this.titles.push("");
       this.descriptions.push(arr["photo"]["description"]["_content"]);
       if ( this.lightBox != true ) {
@@ -163,8 +177,63 @@ Gallery = function(array) {
     document.getElementsByTagName("body")[0].appendChild(script);
   }
   
-  this.run = function() {
-    this.getUserById(this.username);
+  // Default theme functionality
+  
+  this.scroller = function(isLeft) {
+	
+	if ( isLeft ) {
+      document.getElementById(this.target).scrollLeft -= 1;
+	} else {
+	  document.getElementById(this.target).scrollLeft += 1;
+	}
+  }
+  this.scrollLeft = function() {
+	var interval;
+    if ( navigator.userAgent.indexOf("Opera") != - 1 ) {
+		interval = 5;
+	} else {
+		interval = 1;
+	}
+	scroller = setInterval( this.id+".scroller(true)",interval);
+  }
+  this.scrollRight = function() {
+	var interval;
+    if ( navigator.userAgent.indexOf("Opera") != - 1 ) {
+		interval = 5;
+	} else {
+		interval = 1;
+	}
+	scroller = setInterval( this.id+".scroller(false)",interval);
+  }
+  this.cancelScroll = function() {
+	clearInterval(scroller);
+  }
+  this.gotoTo = function(i) {
+	$.prettyPhoto.open(gallery1.fullImages,gallery1.titles,gallery1.descriptions);
+	for ( var j = 0; j < i ; ++j ) {
+	  $.prettyPhoto.changePage("next");
+	}
+  }
+  
+  // Initialisation
+  
+  this.run = function(element) {
+	if ( typeof element != "undefined" ) { // make it so!
+	  if ( typeof element == "string" ) {
+		element = document.getElementById(element);
+		if ( element.nodeName != "DIV" ) 
+			throw "Element " + element + " is not a DIV";
+		
+	  } else if ( typeof element == "object" ) {
+		if ( element.nodeName != "DIV" ) 
+			throw "Element " + element + " is not a DIV";
+		
+	  }
+	  if ( typeof this.template == "undefined" ) { // warp 1
+		element.innerHTML = "<div id=\"bigger\" style=\"width:500px;\"><img style=\"max-width:100%;height:334px; padding:2px; border:1px #999 solid;\"  onclick=\"" + this.id + ".gotoTo(this.getAttribute('data-id'))\"/><div/></div><div style=\"width: 500px; position: relative;\"><a id=\"nextBtn\" href=\"javascript:;\" style=\"display: block; position: absolute; left: 0; width: 5%; top: 0; bottom: 0;text-decoration:none;\" onmouseover=\"" + this.id + ".scrollLeft()\" onmouseout=\"" + this.id + ".cancelScroll()\"><img src=\"images/scroll_left.png\" alt=\"Vorherige(s) Bild(er) anzeigen\"/></a><div id=\"gallery\" style=\"display: inline-block; height: 75px; vertical-align: middle; overflow-y: hidden; left: 6%; right:6%; top:0; bottom: 0; width:87%; overflow-x: hidden; white-space:nowrap; position: relative; padding:2px; border:1px #999 solid;\">&nbsp;</div><a href=\"javascript:;\" id=\"prevBtn\"  style=\"display: block; position: absolute; right: 0; width: 5%; top: 0; bottom: 0;text-decoration:none;\" onmouseover=\"" + this.id + ".scrollRight()\" onmouseout=\"" + this.id + ".cancelScroll()\"><img src=\"images/scroll_right.png\" alt=\"N&auml;chste(s) Bild(er) anzeigen\"/></a></div>";
+	  }
+	}
+    this.getUserById(this.username); // engage
   }
     
   this.preloader = function(target, src) {
@@ -211,19 +280,17 @@ Gallery = function(array) {
   }
     
   this.zoom = function(element) {
-    console.log(this.target);
     var e = document.getElementById(this.bigger).getElementsByTagName("img")[0];
     var n = (parseInt(element.getAttribute("id")) -1),
     v = (parseInt(element.getAttribute("id")) +1);
     for ( i in document.getElementById(this.target).getElementsByTagName("img") ) {
       if ( parseInt(i) >= 0 && parseInt(i) != Math.NaN ) {
-        console.log(i);
         document.getElementById(this.target).getElementsByTagName("img")[i].className = 
         document.getElementById(this.target).getElementsByTagName("img")[i].className.replace("ugallery_active", " "); 
         
       }
     }
-	
+	e.setAttribute("data-id", element.getAttribute("id"));
     element.setAttribute("class", (element.getAttribute("class") != null ? element.getAttribute("class") : "") + "ugallery_active");
     document.getElementById("nextBtn").setAttribute("data-link", n );
     document.getElementById("prevBtn").setAttribute("data-link", v );
