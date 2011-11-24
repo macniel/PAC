@@ -1,4 +1,4 @@
-= GalleryTool =
+= GalleryTool version 0.9 =
 
 Diese //Javascript// Klasse dient der einfachen implementierung von [[http://www.flickr.com/|FlickR]] gestützten
 Gallerien ohne dass IDs, wie etwa für Benutzer und Photosets, verwendet werden müssen.
@@ -34,6 +34,18 @@ Sobald das Gallery Objekt erschaffen wurde werden mit der funktion .run() die Ab
 
 Ein Beispielcode ist in der Datei //seite.html// zu finden
 
+=== Verwendung nach 0.9 ===
+
+Es ist nun nicht mehr nötig den gesamten Markup zu verwenden, da dieser Batzen HTML Code nun als Default Template
+in der Klasse integriert ist. sollte ein anderes Template erwünscht sein so gibt es nun den Parameter **template** (Zeichenkette)
+der den HTML Code als String an das GalleryTool übergibt.
+
+es ist erforderlich die funktion run mit dem parameter der ID des Zielframes (ein DIV Element) aufzurufen.
+Beispielsweise: 
+{{{
+gallery1.run("wrapper");
+}}}
+Der Rest wird von der Klasse übernommen.
 === Markup ===
 
 Es ist wichtig, dass es folgende Elemente auf der Seite wo eine Gallery eingebunden werden soll existieren:
