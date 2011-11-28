@@ -92,15 +92,7 @@ Gallery = function(array) {
 			+ "_" 
 			+ this.photos[arr["photo"]["id"]]["secret"]
 			+ "_t.jpg");
-		this.fullImages.push("http://farm" 
-			+ this.photos[arr["photo"]["id"]]["farm"]
-			+ ".static.flickr.com/" 
-			+ this.photos[arr["photo"]["id"]]["server"]
-			+"/" 
-			+ this.photos[arr["photo"]["id"]]["id"]
-			+ "_" 
-			+ this.photos[arr["photo"]["id"]]["secret"]
-			+ ".jpg");
+		
 	  this.photos[arr["photo"]["id"]]["description"] = arr["photo"]["description"]["_content"];
       this.titles.push(arr["photo"]["title"]["_content"]);
       this.descriptions.push(arr["photo"]["description"]["_content"]);
@@ -127,6 +119,15 @@ Gallery = function(array) {
 			+ this.photos[e]["secret"]
 			+ "_t.jpg");
 		  img.setAttribute("data-biggest", "http://farm" 
+			+ this.photos[e]["farm"]
+			+ ".static.flickr.com/" 
+			+ this.photos[e]["server"]
+			+"/" 
+			+ this.photos[e]["id"]
+			+ "_" 
+			+ this.photos[e]["secret"]
+			+ "_b.jpg");
+		  this.fullImages.push("http://farm" 
 			+ this.photos[e]["farm"]
 			+ ".static.flickr.com/" 
 			+ this.photos[e]["server"]
@@ -237,7 +238,7 @@ Gallery = function(array) {
 		
 	  }
 	  if ( typeof this.template == "undefined" ) { // warp 1
-		element.innerHTML = "<div id=\"bigger\" style=\"width:500px;\"><img style=\"max-width:100%;height:334px; padding:2px; border:1px #999 solid;\"  onclick=\"" + this.id + ".gotoTo(this.getAttribute('data-id'))\"/><div/></div><div style=\"width: 500px; position: relative;\"><a id=\"nextBtn\" href=\"javascript:;\" style=\"display: block; position: absolute; left: 0; width: 5%; top: 0; bottom: 0;text-decoration:none;\" onmouseover=\"" + this.id + ".scrollLeft()\" onmouseout=\"" + this.id + ".cancelScroll()\"><img src=\"images/scroll_left.png\" alt=\"Vorherige(s) Bild(er) anzeigen\"/></a><div id=\"gallery\" style=\"display: inline-block; height: 75px; vertical-align: middle; overflow-y: hidden; left: 6%; right:6%; top:0; bottom: 0; width:87%; overflow-x: hidden; white-space:nowrap; position: relative; padding:2px; border:1px #999 solid;\">&nbsp;</div><a href=\"javascript:;\" id=\"prevBtn\"  style=\"display: block; position: absolute; right: 0; width: 5%; top: 0; bottom: 0;text-decoration:none;\" onmouseover=\"" + this.id + ".scrollRight()\" onmouseout=\"" + this.id + ".cancelScroll()\"><img src=\"images/scroll_right.png\" alt=\"N&auml;chste(s) Bild(er) anzeigen\"/></a></div>";
+		element.innerHTML = "<div id=\"bigger\" style=\"width:500px;\"><img style=\"max-width:100%;height:334px; padding-bottom:7px; border-bottom:1px #999 solid;\"  onclick=\"" + this.id + ".gotoTo(this.getAttribute('data-id'))\"/><div/></div><div style=\"width: 500px; position: relative;\"><a id=\"nextBtn\" href=\"javascript:;\" style=\"display: block; position: absolute; left: 0; width: 5%; top: 0; bottom: 0;text-decoration:none;\" onmouseover=\"" + this.id + ".scrollLeft()\" onmouseout=\"" + this.id + ".cancelScroll()\"><img src=\"images/Actions-go-previous-icon.png\" alt=\"Vorherige(s) Bild(er) anzeigen\" style=\"margin-top:23px; border:none;\"/></a><div id=\"gallery\" style=\"display: inline-block; height: 80px; vertical-align: middle; overflow-y: hidden; left: 7%; right:6%; top:0; bottom: 0; width:86%; overflow-x: hidden; white-space:nowrap; position: relative;\">&nbsp;</div><a href=\"javascript:;\" id=\"prevBtn\"  style=\"display: block; position: absolute; right: 0; width: 5%; top: 0; bottom: 0;text-decoration:none;\" onmouseover=\"" + this.id + ".scrollRight()\" onmouseout=\"" + this.id + ".cancelScroll()\"><img src=\"images/Actions-go-next-icon.png\" alt=\"N&auml;chste(s) Bild(er) anzeigen\"/ style=\"margin-top:23px; margin-left:-6px; border:none;\"/></a></div><div id=\"up-triangle\"></div>";
 	  }
 	}
     this.getUserById(this.username); // engage
