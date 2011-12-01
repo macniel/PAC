@@ -1,4 +1,4 @@
-var $ = window.jQuery;
+/*global $:true */
 $.fn.prettyPhoto();
 /**
  * The Class Photo is a model to store a single image from an Image provider.
