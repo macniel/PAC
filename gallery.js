@@ -1,319 +1,328 @@
-Gallery = function(array) {
-  this.callbackAddedPhoto = array["callbackAddedPhoto"];  
-  this.callbackZoom = array["callbackZoom"];
-  this.callbackZoomBefore = array["callbackZoomBefore"];
-  this.callbackReady = array["callbackReady"];
-  this.target = array["target"];
-  this.template;
-  this.id = array["id"];
-  this.bigger = array["bigger"];
-  this.userid = "";
-  this.photos = {};
-  this.username = array["username"];
-  this.photosetName = array["photosetName"];
-  this.base = "http://api.flickr.com/services/rest/?";
-  this.GUID = "de.tutech.macniel.gallery";
-  this.key  = "e317e26a00dd06d79b67aa24bd3b9612";
-  this.photosetId = array["photosetId"];
-  this.lightbox = array["lightbox"];
-  this.images = [];
-  this.descriptions = [];
-  this.titles = [];
-  this.fullImages = [];
-  this.scroller;
-  
-  // Asyncronized Madness
-  this.getUserById_Helper = function(arr) {
-    if ( arr["stat"] == "ok") {
-      this.userid = arr["user"]["nsid"];
-    }
-    this.getPhotosetId();
-  }
-  this.getUserById = function(id) {
-    script = document.createElement("script");
-    script.setAttribute("src", this.base + "method=flickr.people.findByUsername&api_key=" 
-      + this.key + "&username=" + id + "&format=json&jsoncallback=" + this.id + ".getUserById_Helper");
-    script.setAttribute("type", "text/javascript");
-    document.getElementsByTagName("body")[0].appendChild(script);
-  }
+var $ = window.jQuery;
+$.fn.prettyPhoto();
+/**
+ * The Class Photo is a model to store a single image from an Image provider.
+ * It should hold a thumbnail of the picture, the original picture, a title 
+ * and a description, it also contain a reference to its destinated DOMElement
+ */
+var Photo = function (aId, aTitle, aIsPrimary, aDescription, aSrc, aThumbnail) {
+		"use strict";
+		var link,
+			id = aId,
+			source = aSrc,
+			thumbnail = aThumbnail,
+			primary =  aIsPrimary === 1 || aIsPrimary === "1" || aIsPrimary === true,
+			title = aTitle,
+			description = aDescription,
+			element;
+		this.setLink = function (url) {
+			link = url;
+		};
+		this.getLink = function () {
+			return link;
+		};
+		this.getId = function () {
+			return id;
+		};
+		this.getSource = function () {
+			return source;
+		};
+		this.getThumbnail = function () {
+			return thumbnail;
+		};
+		this.isPrimary = function () {
+			return primary;
+		};
+		this.getTitle = function () {
+			return title;
+		};
+		this.getDescription = function () {
+			return description;
+		};
+		this.setDescription = function (str) {
+			description = str;
+		};
+		this.getHTML = function () {
+			return element;
+		};
+		this.bindHTML = function (domElement) {
+			element = domElement;
+		};
+		return this;
+	},
 
-  this.getPhotosetId_Helper = function(arr) {
-    if (arr["stat"] == "ok") {
-      for ( var photosets in arr["photosets"]["photoset"] ) {
-        var name = arr["photosets"]["photoset"][photosets]["title"]["_content"];
-        if ( name === this.photosetName) {
-          this.count = arr["photosets"]["photoset"][photosets]["photos"];
-          this.size = this.count;
-          this.photosetId = arr["photosets"]["photoset"][photosets]["id"];
-        }
-      }
-    }
-    this.getPhotos();
-  }
-  this.getPhotosetId = function(name, nsid) {
-    if ( typeof (name) != "undefined" )
-      this.photosetName = name;
-    if ( typeof (nsid) != "undefined" )
-      this.userid = nsid;
-    var script = document.createElement("script");
-    script.setAttribute("src", this.base + "method=flickr.photosets.getList&api_key=" 
-      + this.key + "&user_id=" + this.userid + "&&format=json&jsoncallback=" + this.id + ".getPhotosetId_Helper");
-    script.setAttribute("type", "text/javascript");
-    document.getElementsByTagName("body")[0].appendChild(script);
-  }   
-  this.getPhotos_Helper = function(arr) {
-    if ( arr["stat"] == "ok" ) {
-      for ( var i in arr["photoset"]["photo"] ) {
-        var id = arr["photoset"]["photo"][i]["id"];
-        this.photos[id] = arr["photoset"]["photo"][i];
-        
-        this.getPhotoDescription(id);
-      }
-    }
-    this.getPhotoDescription();
-  }  
-  this.getPhotos = function(photosetId) {
-    if ( typeof photosetId != "undefined" )
-      this.photosetId = photosetId;
-    var script = document.createElement("script");
-    script.setAttribute("src", this.base + "method=flickr.photosets.getPhotos&extras=owner_name&api_key=" 
-      + this.key + "&photoset_id=" + this.photosetId + "&&format=json&jsoncallback=" + this.id + ".getPhotos_Helper");
-    script.setAttribute("type", "text/javascript");
-    document.getElementsByTagName("body")[0].appendChild(script);
-  } 
-  this.getPhotoDescription_Helper = function(arr) {
-    if ( arr["stat"] == "ok" && typeof this.photos[arr["photo"]["id"]] != "undefined") {
-		this.images.push("http://farm" 
-			+ this.photos[arr["photo"]["id"]]["farm"]
-			+ ".static.flickr.com/" 
-			+ this.photos[arr["photo"]["id"]]["server"]
-			+"/" 
-			+ this.photos[arr["photo"]["id"]]["id"]
-			+ "_" 
-			+ this.photos[arr["photo"]["id"]]["secret"]
-			+ "_t.jpg");
-		
-	  this.photos[arr["photo"]["id"]]["description"] = arr["photo"]["description"]["_content"];
-      this.titles.push(arr["photo"]["title"]["_content"]);
-      this.descriptions.push(arr["photo"]["description"]["_content"]);
-      this.decreaseCount();
-    }
-    
-  }
-  
-  this.decreaseCount = function() {
-    this.count -= 1;
-    if ( this.count == 1 ) {
-	  var i = -1; 
-      for ( e in this.photos ) {
-		  ++i;
-		  img = document.createElement("img");
-		  img.setAttribute("id", i);
-		  img.setAttribute("src", "http://farm" 
-			+ this.photos[e]["farm"]
-			+ ".static.flickr.com/" 
-			+ this.photos[e]["server"]
-			+"/" 
-			+ this.photos[e]["id"]
-			+ "_" 
-			+ this.photos[e]["secret"]
-			+ "_t.jpg");
-		  img.setAttribute("data-biggest", "http://farm" 
-			+ this.photos[e]["farm"]
-			+ ".static.flickr.com/" 
-			+ this.photos[e]["server"]
-			+"/" 
-			+ this.photos[e]["id"]
-			+ "_" 
-			+ this.photos[e]["secret"]
-			+ "_b.jpg");
-		  this.fullImages.push("http://farm" 
-			+ this.photos[e]["farm"]
-			+ ".static.flickr.com/" 
-			+ this.photos[e]["server"]
-			+"/" 
-			+ this.photos[e]["id"]
-			+ "_" 
-			+ this.photos[e]["secret"]
-			+ "_b.jpg");
-		  img.setAttribute("data-original", "http://farm" 
-			+ this.photos[e]["farm"]
-			+ ".static.flickr.com/" 
-			+ this.photos[e]["server"]
-			+"/" 
-			+ this.photos[e]["id"]
-			+ "_" 
-			+ this.photos[e]["secret"]
-			+ ".jpg");
-		  img.setAttribute("alt", this.photos[e]["description"]);
-		  img.setAttribute("title", this.photos[e]["title"]);
-		  
-		  if ( this.lightBox != true ) {
-			img.setAttribute("onclick", this.id + ".zoom(this)");
-		  }
-		  a = document.createElement("a");
-		  a.setAttribute("href", "#");
-		  a.appendChild(img);
-		  if ( typeof this.callbackAddedPhoto == "function" ) {
-			img.style.display = "none";
-		  }
-		  if ( typeof this.target != "undefined" ) {
-			document.getElementById(this.target).appendChild(a); 
-		  } else {
-			document.getElementsByTagName("body")[0].appendChild(a); 
-		  }
-		  if ( typeof this.callbackAddedPhoto == "function" ) {
-			this.callbackAddedPhoto(a, img);
-		  }
-		  if ( this.photos[e]["isprimary"] == 1 ) {
-			  
-            this.zoom(document.getElementById(i));
-       
-		  }
-	  }
-	  if ( typeof this.callbackReady == "function" ) {
-		this.callbackReady();
-	  }
-    }
-  }
-  
-  this.getPhotoDescription = function(id) {
-    var script = document.createElement("script");
-    script.setAttribute("src", this.base + "method=flickr.photos.getInfo&api_key=" 
-      + this.key + "&photo_id=" + id + "&&format=json&jsoncallback=" + this.id + ".getPhotoDescription_Helper");
-    script.setAttribute("type", "text/javascript");
-    document.getElementsByTagName("body")[0].appendChild(script);
-  }
-  
-  // Default theme functionality
-  
-  this.scroller = function(isLeft) {
-	
-	if ( isLeft ) {
-      document.getElementById(this.target).scrollLeft -= 1;
-	} else {
-	  document.getElementById(this.target).scrollLeft += 1;
-	}
-  }
-  this.scrollLeft = function() {
-	var interval;
-    if ( navigator.userAgent.indexOf("Opera") != - 1 ) {
-		interval = 5;
-	} else {
-		interval = 1;
-	}
-	scroller = setInterval( this.id+".scroller(true)",interval);
-  }
-  this.scrollRight = function() {
-	var interval;
-    if ( navigator.userAgent.indexOf("Opera") != - 1 ) {
-		interval = 5;
-	} else {
-		interval = 1;
-	}
-	scroller = setInterval( this.id+".scroller(false)",interval);
-  }
-  this.cancelScroll = function() {
-	clearInterval(scroller);
-  }
-  this.gotoTo = function(i) {
-	$.prettyPhoto.open(gallery1.fullImages,gallery1.titles,gallery1.descriptions);
-	for ( var j = 0; j < i ; ++j ) {
-	  $.prettyPhoto.changePage("next");
-	}
-  }
-  
-  // Initialisation
-  
-  this.run = function(element) {
-	if ( typeof element != "undefined" ) { // make it so!
-	  if ( typeof element == "string" ) {
-		element = document.getElementById(element);
-		if ( element.nodeName != "DIV" ) 
-			throw "Element " + element + " is not a DIV";
-		
-	  } else if ( typeof element == "object" ) {
-		if ( element.nodeName != "DIV" ) 
-			throw "Element " + element + " is not a DIV";
-		
-	  }
-	  if ( typeof this.template == "undefined" ) { // warp 1
-		element.innerHTML = "<div id=\"bigger\" style=\"width:500px;\"><img style=\"max-width:100%;height:334px; padding-bottom:7px; border-bottom:1px #999 solid;\"  onclick=\"" + this.id + ".gotoTo(this.getAttribute('data-id'))\"/><div/></div><div style=\"width: 500px; position: relative;\"><a id=\"nextBtn\" href=\"javascript:;\" style=\"display: block; position: absolute; left: 0; width: 5%; top: 0; bottom: 0;text-decoration:none;\" onmouseover=\"" + this.id + ".scrollLeft()\" onmouseout=\"" + this.id + ".cancelScroll()\"><img src=\"images/Actions-go-previous-icon.png\" alt=\"Vorherige(s) Bild(er) anzeigen\" style=\"margin-top:23px; border:none;\"/></a><div id=\"gallery\" style=\"display: inline-block; height: 80px; vertical-align: middle; overflow-y: hidden; left: 7%; right:6%; top:0; bottom: 0; width:86%; overflow-x: hidden; white-space:nowrap; position: relative;\">&nbsp;</div><a href=\"javascript:;\" id=\"prevBtn\"  style=\"display: block; position: absolute; right: 0; width: 5%; top: 0; bottom: 0;text-decoration:none;\" onmouseover=\"" + this.id + ".scrollRight()\" onmouseout=\"" + this.id + ".cancelScroll()\"><img src=\"images/Actions-go-next-icon.png\" alt=\"N&auml;chste(s) Bild(er) anzeigen\"/ style=\"margin-top:23px; margin-left:-6px; border:none;\"/></a></div><div id=\"up-triangle\"></div>";
-	  }
-	}
-    this.getUserById(this.username); // engage
-  }
-    
-  this.preloader = function(target, src) {
-    temp = document.createElement("img");
-    temp.style.display="none";
-    temp.setAttribute("data-target", target);
-    temp.setAttribute("src", src);
-    document.body.appendChild(temp);
-    if ( typeof this.callbackZoom == "function" ) {
-      if ( typeof this.callbackZoomBefore == "function" ) {
-        this.callbackZoomBefore(target);
-      }
-    } 
-      
-    temp.onload = function(evt) {
-      target.setAttribute("src", src);
-      target.setAttribute("data-org", src);
-      if ( typeof this.callbackZoom == "function")
-        this.callbackZoom(target);
-    };
-      
-  }
-    
-  this.slide = function(clickEvent) {
-    var once = false;
-    if ( typeof clickEvent == 'string' ) {
-      link = parseInt(clickEvent);
-      once = true;
-    } else {
-      clickEvent = (clickEvent ? clickEvent : window.event);
-      link = clickEvent.target.getAttribute('data-link');
-    }
-    if ( link == -1 || link == this.photos.length ) 
-      return;
-    else {
-	    
-      img = document.getElementById(this.target).getElementsByTagName("img")[link];
-      console.log(img);
-      halfwidth = document.getElementById(this.target).style.width;
-      halfwidth = parseInt(halfwidth.substring(0, halfwidth.length - 2)) /2;
-      document.getElementById(this.target).scrollLeft = ((link-1) * 75) - 34;
-      this.zoom(img, once);
-    }
-  }
-    
-  this.zoom = function(element) {
-    var e = document.getElementById(this.bigger).getElementsByTagName("img")[0];
-    var n = (parseInt(element.getAttribute("id")) -1),
-    v = (parseInt(element.getAttribute("id")) +1);
-    for ( i in document.getElementById(this.target).getElementsByTagName("img") ) {
-      if ( parseInt(i) >= 0 && parseInt(i) != Math.NaN ) {
-        document.getElementById(this.target).getElementsByTagName("img")[i].className = 
-        document.getElementById(this.target).getElementsByTagName("img")[i].className.replace("ugallery_active", " "); 
-        
-      }
-    }
-	e.setAttribute("data-id", element.getAttribute("id"));
-    element.setAttribute("class", (element.getAttribute("class") != null ? element.getAttribute("class") : "") + "ugallery_active");
-    document.getElementById("nextBtn").setAttribute("data-link", n );
-    document.getElementById("prevBtn").setAttribute("data-link", v );
-    document.getElementById("nextBtn").setAttribute("onclick", this.id + ".slide('" + n + "')");
-    document.getElementById("prevBtn").setAttribute("onclick", this.id + ".slide('" + v + "')");
-    this.preloader(e, element.getAttribute("data-original"));
-    var e1 = document.getElementById(this.bigger).getElementsByTagName("div")[0];
-    e.setAttribute("data-biggest", element.getAttribute("data-biggest"));
-    e1.innerHTML = element.getAttribute("title");
-    if ( typeof this.callbackZoom == "function" ) {
-      this.callbackZoom(e);
-    }  
-       
-  }
-    
-  return this;
-}
-  
+/**
+ * Exception is a Class to handle custom Exceptions and or Errors
+ */
+	Exception = function (aType, aMessage) {
+		"use strict";
+		var message = aMessage,
+			type = aType;
+		this.getMessage = function () {
+			return message;
+		};
+		this.getType = function () {
+			return type;
+		};
+		Exception.prototype.toString = function () {
+			return this.getType() + ": " + this.getMessage();
+		};
+	},
+
+	/**
+	 * The BaseClass GalleryAdapter is an abstract class, which is used to
+	 * display images and manage those from an image provider.
+	 * It can be extended by overriding the privileged function fetchAll
+	 */
+	GalleryAdapter = function () {
+		"use strict";
+		// private
+		var photos = [],
+			images = [],
+			descriptions = [],
+			titles = [];
+		// privileged
+		this.getPhoto = function (byId) {
+			var e = 0;
+			for (e in photos) {
+				if (photos.hasOwnProperty(e) && photos[e].getId() === byId) {
+					return photos[e];
+				}
+			}
+		};
+		/**
+		 * @returns an Array of Photo Objects
+		 */
+		this.getPhotos = function () {
+			return photos;
+		};
+		/**
+		 * This function adds another photo object
+		 * @param photoSrc the photo object
+		 */
+		this.addPhoto = function (photoSrc) {
+			photos.push(photoSrc);
+		};
+		this.addDescription = function (str) {
+			descriptions.push(str);
+		};
+		this.addImage = function (src) {
+			images.push(src);
+		};
+		this.addTitle = function (str) {
+			titles.push(str);
+		};
+		this.publishPhotos = function () {
+			var i = 0;
+			for (i in photos) {
+				if (photos.hasOwnProperty(i)) {
+					this.publishPhoto(photos[i]);
+				}
+			}
+		};
+		this.publishPhoto = function (photo) {
+			var img = $(document.createElement("img"));
+			if (typeof photo.getThumbnail !== "undefined") {
+				img.attr("src", photo.getThumbnail());
+			} else {
+				img.attr("src", photo.getSource());
+				img.css({width: "75px", height: "75px"});
+			}
+			img.attr("title", photo.getTitle());
+			img.attr("alt", photo.getDescription().toString().substring(0, 80));
+			img.data("bigger", photo.getSource());
+			this.addTitle(photo.getTitle());
+			this.addImage(photo.getSource());
+			this.addDescription(photo.getDescription());
+			img.bind("click", function () {
+				$("#bigger img").hide().attr("src", $(this).data("bigger")).load(function () { $(this).fadeIn(); });
+				$("#bigger img").attr("title", $(this).attr("title"));
+				$("#bigger div#description").html($(this).attr("alt"));
+				$("#bigger a#link").attr("href", "#");
+				var i = 0;
+				for (i = 0; i < $("#gallery img").length; i = i + 1) {
+					if ($("#gallery img")[i] === this) {
+						break;
+					}
+				}
+				$("#bigger a#link").data("id", i);
+				$("#bigger a#link").bind("click", function (evt) {
+					var j = 0,
+					    id;
+					if ($("div.ppt:visible").length === 0) {
+						$.prettyPhoto.open(images, titles, descriptions);
+						id = $(this).data("id");
+						for (; j < id; j = j + 1) {
+							$.prettyPhoto.changePage("next");
+						}
+					}
+				});
+				$('#description').hide();
+				if (typeof photo.getLink() !== "undefined") {
+					$("#bigger div#title a").attr("href", photo.getLink());
+					$("#bigger div#title a").attr("title", "Bild auf FlickR ansehen");
+				} else {
+					$("#bigger div#title a").attr("href", "#");
+				}
+				$("#bigger div#title a").text($(this).attr("title"));
+				$("#gallery img").removeClass("active");
+				$(img).addClass("active");
+				return false;
+			});
+			img.addClass("thumbnail");
+			if (photo.isPrimary()) {
+				img.addClass("active");
+				img.click();
+			}
+			photo.bindHTML(img);
+			$("#gallery").append(img);
+			img.hide().fadeIn();
+		};
+		this.fetchAll = function () {};
+		// finalize
+		return this;
+	},
+
+	/**
+	 * @class FlickrAdapter this Class is an Adapter to the Image Provider Flickr.com,
+	 * it needs an apiKey to enable communication to the Server
+	 * the configuration is supposed to be an array, where parameters are set.
+	 * @returns FlickrAdapter
+	 */
+	FlickrAdapter = function (apiKey, configuration) {
+		"use strict";
+		// inheritage
+		var clas = new GalleryAdapter(),
+		// private fields and functions
+		    galleryName = configuration.galleryName,
+			aUserName = configuration.userName,
+			aBaseUrl = "http://api.flickr.com/services/rest/?",
+			userId,
+			photosetId,
+			key = apiKey,
+			getPhotos = function (callback) {
+				$.getJSON(aBaseUrl + "method=flickr.photosets.getPhotos&api_key=" + key + "&photoset_id=" + photosetId +
+					"&format=json&jsoncallback=?",
+					function (data) {
+						var i = 0,
+							aData,
+							bData,
+							imageBasePath,
+							p;
+						for (i in data.photoset.photo) {
+							if (data.photoset.photo.hasOwnProperty(i)) {
+								aData = data.photoset.photo[i];
+								imageBasePath = "http://farm" + aData.farm + ".static.flickr.com/" + aData.server + "/"
+									+ aData.id + "_" + aData.secret;
+								p = new Photo(aData.id, aData.title, aData.isprimary === "1", "", imageBasePath + "_z.jpg", imageBasePath + "_s.jpg");
+								p.setLink("http://www.flickr.com/photos/" + aUserName + "/" + aData.id + "/in/set-" + photosetId + "/");
+								clas.addPhoto(p);
+								clas.publishPhoto(p);
+								$.getJSON(aBaseUrl + "method=flickr.photos.getInfo&api_key=" + key + "&photo_id=" + aData.id
+									+ "&format=json&jsoncallback=?",
+										function (bData) {
+										var desc = bData.photo.description._content,
+											pp = clas.getPhoto(bData.photo.id);
+										pp.setDescription(desc);
+										$(pp.getHTML()).attr("alt", desc);
+									}
+									);
+							}
+						}
+					}
+					);
+			},
+			translatePhotosetName = function (callback) {
+				$.getJSON(aBaseUrl + "method=flickr.photosets.getList&api_key=" + key + "&user_id=" + userId +
+					"&format=json&jsoncallback=?",
+					function (data) {
+						var i = 0;
+						for (i in data.photosets.photoset) {
+							if (data.photosets.photoset.hasOwnProperty(i) && data.photosets.photoset[i].title._content === galleryName) {
+								photosetId = data.photosets.photoset[i].id;
+								getPhotos();
+								return;
+							}
+						}
+						throw new Exception("GalleryNotFoundException", "Photoset \"" + galleryName + "\" was not found.");
+					}
+					);
+			},
+			translateUserName = function () {
+				$.getJSON(aBaseUrl + "method=flickr.people.findByUsername&api_key=" + key + "&username=" + aUserName + "&format=json&jsoncallback=?",
+					function (data) {
+						userId = data.user.nsid;
+						if (data.stat === "1") {
+							throw new Exception("UserNotFoundException", "User \"" + aUserName + "\" not found");
+						}
+						translatePhotosetName();
+					}
+					);
+			};
+		if (typeof configuration !== "object") {
+			throw new Exception("UnexpectedTypeError", "argument #2 has to be of type \"Array\"");
+		}
+		if (typeof configuration.galleryName === "undefined") {
+			throw new Exception("UndefinedValueException", "variable \"galleryName\" is undefined");
+		}
+		if (typeof configuration.userName === "undefined") {
+			throw new Exception("UndefinedValueException", "variable \"userName\" is undefined");
+		}
+		clas.fetchAll = function () {
+			translateUserName();
+		};
+		// finalize
+		return clas;
+	},
+
+	Gallery = function (adapterType, apiKey, configuration) {
+		"use strict";
+		// check dependencies
+		if (typeof window.jQuery === "undefined") {
+			throw new Exception("NoSuchMethodException", "jQuery Library is not loaded");
+		}
+		// define type of adapter
+		var clas;
+		if (typeof adapterType === "string" && typeof window[adapterType] !== "undefined") {
+			clas = new window[adapterType](apiKey, configuration);
+		} else if (typeof adapterType === "object") {
+			clas = adapterType;
+		} else if (typeof adapterType === "function") {
+			clas = new adapterType(apiKey, configuration);
+		} else {
+			throw new Exception("NoSuchClassError", "Class \"" + adapterType + "\" not found");
+		}
+		// add additional functions
+		// finalize
+		return clas;
+	},
+	_scroller = function (isLeft) {
+		"use strict";
+		if (isLeft) {
+			$("#gallery").scrollLeft($("#gallery").scrollLeft() - 1);
+		} else {
+			$("#gallery").scrollLeft($("#gallery").scrollLeft() + 1);
+		}
+	},
+	_scrollLeft = function (rtl) {
+		"use strict";
+		var interval;
+		if (navigator.userAgent.indexOf("Opera") !== -1) {
+			interval = 5;
+		} else {
+			interval = 1;
+		}
+		if (rtl === false) {
+			window.scroller = setInterval("_scroller(false)", interval);
+		} else {
+			window.scroller = setInterval("_scroller(true)", interval);
+		}
+	},
+	_scrollRight = function () {
+		"use strict";
+		_scrollLeft(false);
+	},
+	cancelScroll = function () {
+		"use strict";
+		clearInterval(window.scroller);
+	};
