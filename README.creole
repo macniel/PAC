@@ -1,4 +1,4 @@
-= GalleryTool version 0.9 =
+= PAC version 1.0 =
 
 Diese //Javascript// Klasse dient der einfachen implementierung von [[http://www.flickr.com/|FlickR]] gestützten
 Gallerien ohne dass IDs, wie etwa für Benutzer und Photosets, verwendet werden müssen.
@@ -6,6 +6,10 @@ Gallerien ohne dass IDs, wie etwa für Benutzer und Photosets, verwendet werden 
 == Installation ==
 
 Die Installation erfolgt durch das einbinden der //gallery.js// Datei in das Projekt.
+
+=== Abhänigkeiten ===
+
+PAC erfordert die neuste jQuery und prettyPhoto version
 
 === Kompatibilitätsprobleme zu Bambus CMS ===
 
@@ -16,23 +20,20 @@ wobei in dem src attribut der Pfad zur //gallery.js// Datei eingetragen wird.
 
 == Verwendung ==
 
-Sobald die gallery.js Datei eingebunden ist steht die Klasse Gallery zur verfügung
-Klasse erfolgt mit der übergabe eines arrays in dem alle Einstellungen übergeben werden,
-die möglichen Einstellungen sind:
+Sobald die gallery.js Datei eingebunden ist steht die Klasse Gallery zur verfügung.
+Die Klasse wird mit hilfe des konstruktors new Gallery(galleryAdapter, apiKey, configurationArray); erzeugt.
+* **galleryAdapter** : definiert die Klasse die verwendet werden soll um mit dem Bildprovider kommuniziert werden soll, PAC liefert die Klasse FlickrAdapter mit, welche die Kommunikation zwischen Gallery und FlickR ermöglicht.
+* **apiKey** : definiert den Schlüssel der zur Kommunikation mit dem Bildprovider verwendet werden soll
+* **configurationArray** : die Konfiguration ist von dem Adapter abhängig. FlickrAdapter bspw. erwartet ein Array mit 2 Parametern: **userName** für den Benutzernamen und **galleryName** für den GalleryNamen.
 
-# **target** dies ist der Zielcontainer in dem die Vorschaubilder abgelegt werden sollen
-# **bigger** dies ist der Zielcontainer in dem die größere Ansicht des Bildes angezeigt werden soll
-# **id** damit mehrere Gallerien auf einer Seite funktionieren können werden IDs verwendet um die unterschiedlichen Konfigurationen zu unterscheiden
-# **username** Name des Benutzer von dem das Photoset angezeigt werden soll
-# **photosetName** Name des Photosets das angezeigt werden soll
-# **lightbox** (Wahrheitswert) deaktiviert das Titelbild
-# **callbackZoom** (Funktion(bild) ) was passieren soll, sobald ein Bild aus den Voransichten vergrößert wird
-# **callbackReady** (Funktion() ) was passieren soll, wenn die Gallerie fertig ist
-# **callbackAddedPhoto** (Funktion(bild) ) was passieren soll, wenn ein Bild in den Voransichten hinzugefügt wird
-
-Sobald das Gallery Objekt erschaffen wurde werden mit der funktion .run() die Abfragen gestartet und die Gallerie wird dargestellt.
+Sobald das Gallery Objekt erschaffen wurde werden mit der funktion .fetchAll() die Abfragen gestartet und die Gallerie wird dargestellt.
 
 Ein Beispielcode ist in der Datei //seite.html// zu finden
+
+=== Verwendung nach 1.0 ===
+
+Die Konfiguration ist nun vereinfacht worden, erfordert allerdings erneut, dass die Galerie genau wie in der Datei //seite.html// zu sehen ist
+aufgebaut wird.
 
 === Verwendung nach 0.9 ===
 
