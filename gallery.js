@@ -139,15 +139,14 @@ var Photo = function (aId, aTitle, aIsPrimary, aDescription, aSrc, aThumbnail) {
 				$("#bigger img").hide().attr("src", $(this).data("bigger")).load(function () { $(this).fadeIn(); });
 				$("#bigger img").attr("title", $(this).attr("title"));
 				$("#bigger div#description").html($(this).attr("alt"));
-				$("#bigger a#link").attr("href", "#");
 				var i = 0;
 				for (i = 0; i < $("#gallery img").length; i = i + 1) {
 					if ($("#gallery img")[i] === this) {
 						break;
 					}
 				}
-				$("#bigger a#link").data("id", i);
-				$("#bigger a#link").bind("click", function (evt) {
+				$("#bigger img").data("id", i);
+				$("#bigger img").bind("click", function (evt) {
 					var j = 0,
 					    id;
 					if ($("div.ppt:visible").length === 0) {
@@ -216,7 +215,7 @@ var Photo = function (aId, aTitle, aIsPrimary, aDescription, aSrc, aThumbnail) {
 								aData = data.photoset.photo[i];
 								imageBasePath = "http://farm" + aData.farm + ".static.flickr.com/" + aData.server + "/"
 									+ aData.id + "_" + aData.secret;
-								p = new Photo(aData.id, aData.title, aData.isprimary === "1", "", imageBasePath + "_z.jpg", imageBasePath + "_t.jpg");
+								p = new Photo(aData.id, aData.title, aData.isprimary === "1", "", imageBasePath + "_z.jpg", imageBasePath + "_s.jpg");
 								p.setLink("http://www.flickr.com/photos/" + aUserName + "/" + aData.id + "/in/set-" + photosetId + "/");
 								clas.addPhoto(p);
 								clas.publishPhoto(p);
@@ -300,12 +299,11 @@ var Photo = function (aId, aTitle, aIsPrimary, aDescription, aSrc, aThumbnail) {
 		
 		$(this).html(
 			"<div style=\"position: relative; width: 500px; height: 420px\">\
-		<div id=\"bigger\" style=\"position: absolute; bottom: 92px; top: 0;\">\
-		<div id=\"title\" style=\"width: 100%\">\
+		<div id=\"bigger\" style=\"position: absolute; bottom: 92px; top: 0; text-align: center; width: 500px; height: 328px\">\
+		<div id=\"title\" style=\"width: 500px;white-space:nowrap; text-align: left\">\
 				<a href=\"\">&nbsp;</a>\
 			</div>\
-				<a id=\"link\" href=\"\" onmouseover=\"$('#description').fadeIn()\">\
-			<img style=\"width: 500px; max-height: 420px; position: absolute; bottom: 0\" />\
+			<img style=\"max-width: 500px; max-height: 328px; margin: auto 0\" />\
 		<div id=\"up-triangle\"></div>\
 		</div>\
 		<div class=\"gallerybox\" style=\"position: absolute; width: 500px; height: 80px; bottom: 0;\">\
