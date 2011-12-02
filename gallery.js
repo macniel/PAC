@@ -5,7 +5,8 @@ $.fn.prettyPhoto();
  * It should hold a thumbnail of the picture, the original picture, a title 
  * and a description, it also contain a reference to its destinated DOMElement
  */
-var Photo = function (aId, aTitle, aIsPrimary, aDescription, aSrc, aThumbnail) {
+var PAC = {
+	Photo : function (aId, aTitle, aIsPrimary, aDescription, aSrc, aThumbnail) {
 		"use strict";
 		var link,
 			id = aId,
@@ -51,10 +52,10 @@ var Photo = function (aId, aTitle, aIsPrimary, aDescription, aSrc, aThumbnail) {
 		return this;
 	},
 
-/**
- * Exception is a Class to handle custom Exceptions and or Errors
- */
-	Exception = function (aType, aMessage) {
+	/**
+	 * Exception is a Class to handle custom Exceptions and or Errors
+	 */
+	Exception : function (aType, aMessage) {
 		"use strict";
 		var message = aMessage,
 			type = aType;
@@ -64,17 +65,17 @@ var Photo = function (aId, aTitle, aIsPrimary, aDescription, aSrc, aThumbnail) {
 		this.getType = function () {
 			return type;
 		};
-		Exception.prototype.toString = function () {
+		PAC.Exception.prototype.toString = function () {
 			return this.getType() + ": " + this.getMessage();
 		};
 	},
 
-	/**
-	 * The BaseClass GalleryAdapter is an abstract class, which is used to
-	 * display images and manage those from an image provider.
-	 * It can be extended by overriding the privileged function fetchAll
-	 */
-	GalleryAdapter = function () {
+		/**
+		 * The BaseClass GalleryAdapter is an abstract class, which is used to
+		 * display images and manage those from an image provider.
+		 * It can be extended by overriding the privileged function fetchAll
+		 */
+	GalleryAdapter : function () {
 		"use strict";
 		// private
 		var photos = [],
@@ -148,7 +149,7 @@ var Photo = function (aId, aTitle, aIsPrimary, aDescription, aSrc, aThumbnail) {
 				$("#bigger img").data("id", i);
 				$("#bigger img").bind("click", function (evt) {
 					var j = 0,
-					    id;
+						id;
 					if ($("div.ppt:visible").length === 0) {
 						$.prettyPhoto.open(images, titles, descriptions);
 						id = $(this).data("id");
@@ -190,12 +191,12 @@ var Photo = function (aId, aTitle, aIsPrimary, aDescription, aSrc, aThumbnail) {
 	 * the configuration is supposed to be an array, where parameters are set.
 	 * @returns FlickrAdapter
 	 */
-	FlickrAdapter = function (apiKey, configuration) {
+	FlickrAdapter : function (apiKey, configuration) {
 		"use strict";
 		// inheritage
-		var clas = new GalleryAdapter(),
+		var clas = new PAC.GalleryAdapter(),
 		// private fields and functions
-		    galleryName = configuration.galleryName,
+			galleryName = configuration.galleryName,
 			aUserName = configuration.userName,
 			aBaseUrl = "http://api.flickr.com/services/rest/?",
 			userId,
@@ -209,25 +210,23 @@ var Photo = function (aId, aTitle, aIsPrimary, aDescription, aSrc, aThumbnail) {
 							aData,
 							bData,
 							imageBasePath,
-							p;
+							p,
+							descriptionCallback = function (bData) {
+								var desc = bData.photo.description._content,
+									pp = clas.getPhoto(bData.photo.id);
+								pp.setDescription(desc);
+								$(pp.getHTML()).attr("alt", desc);
+							};
 						for (i in data.photoset.photo) {
 							if (data.photoset.photo.hasOwnProperty(i)) {
 								aData = data.photoset.photo[i];
 								imageBasePath = "http://farm" + aData.farm + ".static.flickr.com/" + aData.server + "/"
 									+ aData.id + "_" + aData.secret;
-								p = new Photo(aData.id, aData.title, aData.isprimary === "1", "", imageBasePath + "_z.jpg", imageBasePath + "_s.jpg");
+								p = new PAC.Photo(aData.id, aData.title, aData.isprimary === "1", "", imageBasePath + "_z.jpg", imageBasePath + "_s.jpg");
 								p.setLink("http://www.flickr.com/photos/" + aUserName + "/" + aData.id + "/in/set-" + photosetId + "/");
 								clas.addPhoto(p);
 								clas.publishPhoto(p);
-								$.getJSON(aBaseUrl + "method=flickr.photos.getInfo&api_key=" + key + "&photo_id=" + aData.id
-									+ "&format=json&jsoncallback=?",
-										function (bData) {
-										var desc = bData.photo.description._content,
-											pp = clas.getPhoto(bData.photo.id);
-										pp.setDescription(desc);
-										$(pp.getHTML()).attr("alt", desc);
-									}
-									);
+								$.getJSON(aBaseUrl + "method=flickr.photos.getInfo&api_key=" + key + "&photo_id=" + aData.id + "&format=json&jsoncallback=?", descriptionCallback);
 							}
 						}
 					}
@@ -245,7 +244,7 @@ var Photo = function (aId, aTitle, aIsPrimary, aDescription, aSrc, aThumbnail) {
 								return;
 							}
 						}
-						throw new Exception("GalleryNotFoundException", "Photoset \"" + galleryName + "\" was not found.");
+						throw new PAC.Exception("GalleryNotFoundException", "Photoset \"" + galleryName + "\" was not found.");
 					}
 					);
 			},
@@ -254,122 +253,52 @@ var Photo = function (aId, aTitle, aIsPrimary, aDescription, aSrc, aThumbnail) {
 					function (data) {
 						userId = data.user.nsid;
 						if (data.stat === "1") {
-							throw new Exception("UserNotFoundException", "User \"" + aUserName + "\" not found");
+							throw new PAC.Exception("UserNotFoundException", "User \"" + aUserName + "\" not found");
 						}
 						translatePhotosetName();
 					}
 					);
 			};
 		if (typeof configuration !== "object") {
-			throw new Exception("UnexpectedTypeError", "argument #2 has to be of type \"Array\"");
+			throw new PAC.Exception("UnexpectedTypeError", "argument #2 has to be of type \"Array\"");
 		}
 		if (typeof configuration.galleryName === "undefined") {
-			throw new Exception("UndefinedValueException", "variable \"galleryName\" is undefined");
+			throw new PAC.Exception("UndefinedValueException", "variable \"galleryName\" is undefined");
 		}
 		if (typeof configuration.userName === "undefined") {
-			throw new Exception("UndefinedValueException", "variable \"userName\" is undefined");
+			throw new PAC.Exception("UndefinedValueException", "variable \"userName\" is undefined");
 		}
 		clas.fetchAll = function () {
 			translateUserName();
 		};
 		clas.getProvider = function () {
 			return "FlickR";
-		}
+		};
 		// finalize
 		return clas;
-	};
-	
-	HTMLDivElement.prototype.gallerify = function (adapterType, apiKey, configuration) {
+	},
+	Gallery : function (AdapterType, apiKey, configuration) {
 		"use strict";
 		// check dependencies
 		if (typeof window.jQuery === "undefined") {
-			throw new Exception("NoSuchMethodException", "jQuery Library is not loaded");
+			throw new PAC.Exception("NoSuchMethodException", "jQuery Library is not loaded");
 		}
 		// define type of adapter
 		var clas;
-		if (typeof adapterType === "string" && typeof window[adapterType] !== "undefined") {
-			clas = new window[adapterType](apiKey, configuration);
-		} else if (typeof adapterType === "object") {
-			clas = adapterType;
-		} else if (typeof adapterType === "function") {
-			clas = new adapterType(apiKey, configuration);
+		if (typeof AdapterType === "string" && typeof window[AdapterType] !== "undefined") {
+			clas = new window[AdapterType](apiKey, configuration);
+		} else if (typeof AdapterType === "object") {
+			clas = AdapterType;
+		} else if (typeof AdapterType === "function") {
+			clas = new AdapterType(apiKey, configuration);
 		} else {
-			throw new Exception("NoSuchClassError", "Class \"" + adapterType + "\" not found");
-		}
-		
-		$(this).html(
-			"<div style=\"position: relative; width: 500px; height: 420px\">\
-		<div id=\"bigger\" style=\"position: absolute; bottom: 92px; top: 0; text-align: center; width: 500px; height: 328px\">\
-		<div id=\"title\" style=\"width: 500px;white-space:nowrap; text-align: left\">\
-				<a href=\"\">&nbsp;</a>\
-			</div>\
-			<img style=\"max-width: 500px; max-height: 328px; margin: auto 0\" />\
-		<div id=\"up-triangle\"></div>\
-		</div>\
-		<div class=\"gallerybox\" style=\"position: absolute; width: 500px; height: 80px; bottom: 0;\">\
-			<div id=\"left\" onmouseover=\"_scrollLeft()\" onmouseout=\"cancelScroll()\"><img src=\"images/Actions-go-previous-icon.png\" alt=\"Vorheriges Bild anzeigen\" style=\"margin-top:23px; border:none;\"/></div>\
-			<div id=\"right\" onmouseover=\"_scrollRight()\" onmouseout=\"cancelScroll()\">\
-			<img src=\"images/Actions-go-next-icon.png\" alt=\"N&auml;chstes Bild anzeigen\" style=\"margin-top:23px; margin-left:-6px; border:none;\"/></div>\
-			<div id=\"gallery\">&nbsp;</div>\
-		</div>\
-	</div>"
-		);
-		
-		window._scroller = function (isLeft) {
-			"use strict";
-			if (isLeft) {
-				$("#gallery").scrollLeft($("#gallery").scrollLeft() - 1);
-			} else {
-				$("#gallery").scrollLeft($("#gallery").scrollLeft() + 1);
-			}
-		};
-		window._scrollLeft = function (rtl) {
-			"use strict";
-			var interval;
-			if (navigator.userAgent.indexOf("Opera") !== -1) {
-				interval = 5;
-			} else {
-				interval = 1;
-			}
-			if (rtl === false) {
-				window.scroller = setInterval("_scroller(false)", interval);
-			} else {
-				window.scroller = setInterval("_scroller(true)", interval);
-			}
-		};
-		window._scrollRight = function () {
-			"use strict";
-			_scrollLeft(false);
-		};
-		window.cancelScroll = function () {
-			"use strict";
-			clearInterval(window.scroller);
-		};
-		clas.fetchAll();
-	}
-	
-	Gallery = function (adapterType, apiKey, configuration) {
-		"use strict";
-		// check dependencies
-		if (typeof window.jQuery === "undefined") {
-			throw new Exception("NoSuchMethodException", "jQuery Library is not loaded");
-		}
-		// define type of adapter
-		var clas;
-		if (typeof adapterType === "string" && typeof window[adapterType] !== "undefined") {
-			clas = new window[adapterType](apiKey, configuration);
-		} else if (typeof adapterType === "object") {
-			clas = adapterType;
-		} else if (typeof adapterType === "function") {
-			clas = new adapterType(apiKey, configuration);
-		} else {
-			throw new Exception("NoSuchClassError", "Class \"" + adapterType + "\" not found");
+			throw new PAC.Exception("NoSuchClassError", "Class \"" + AdapterType + "\" not found");
 		}
 		// add additional functions
 		// finalize
 		return clas;
 	},
-	_scroller = function (isLeft) {
+	_scroller : function (isLeft) {
 		"use strict";
 		if (isLeft) {
 			$("#gallery").scrollLeft($("#gallery").scrollLeft() - 1);
@@ -377,7 +306,7 @@ var Photo = function (aId, aTitle, aIsPrimary, aDescription, aSrc, aThumbnail) {
 			$("#gallery").scrollLeft($("#gallery").scrollLeft() + 1);
 		}
 	},
-	_scrollLeft = function (rtl) {
+	_scrollLeft : function (rtl) {
 		"use strict";
 		var interval;
 		if (navigator.userAgent.indexOf("Opera") !== -1) {
@@ -386,16 +315,26 @@ var Photo = function (aId, aTitle, aIsPrimary, aDescription, aSrc, aThumbnail) {
 			interval = 1;
 		}
 		if (rtl === false) {
-			window.scroller = setInterval("_scroller(false)", interval);
+			window.scroller = setInterval(function () { PAC._scroller(false); }, interval);
 		} else {
-			window.scroller = setInterval("_scroller(true)", interval);
+			window.scroller = setInterval(function () { PAC._scroller(true); }, interval);
 		}
 	},
-	_scrollRight = function () {
+	_scrollRight : function () {
 		"use strict";
-		_scrollLeft(false);
+		PAC._scrollLeft(false);
 	},
-	cancelScroll = function () {
+	cancelScroll : function () {
 		"use strict";
 		clearInterval(window.scroller);
-	};
+	}
+};
+
+HTMLDivElement.prototype.gallerify = function (AdapterType, apiKey, configuration) {
+	"use strict";
+	var clas = new PAC.Gallery(AdapterType, apiKey, configuration);
+	$(this).html(
+		"<div style=\"position: relative; width: 500px; height: 420px\"><div id=\"bigger\" style=\"position: absolute; bottom: 92px; top: 0; text-align: center; width: 500px; height: 328px\"><div id=\"title\" style=\"width: 500px;white-space:nowrap; text-align: left\"><a href=\"\">&nbsp;</a></div><img style=\"max-width: 500px; max-height: 328px; margin: auto 0\" /><div id=\"up-triangle\"></div></div><div class=\"gallerybox\" style=\"position: absolute; width: 500px; height: 80px; bottom: 0;\"><div id=\"left\" onmouseover=\"PAC._scrollLeft()\" onmouseout=\"PAC.cancelScroll()\"><img src=\"images/Actions-go-previous-icon.png\" alt=\"Vorheriges Bild anzeigen\" style=\"margin-top:23px; border:none;\"/></div><div id=\"right\" onmouseover=\"PAC._scrollRight()\" onmouseout=\"PAC.cancelScroll()\"><img src=\"images/Actions-go-next-icon.png\" alt=\"N&auml;chstes Bild anzeigen\" style=\"margin-top:23px; margin-left:-6px; border:none;\"/></div><div id=\"gallery\">&nbsp;</div></div></div>"
+	);
+	clas.fetchAll();
+};
