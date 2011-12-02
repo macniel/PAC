@@ -80,7 +80,8 @@ var Photo = function (aId, aTitle, aIsPrimary, aDescription, aSrc, aThumbnail) {
 		var photos = [],
 			images = [],
 			descriptions = [],
-			titles = [];
+			titles = [],
+			self = this;
 		// privileged
 		this.getPhoto = function (byId) {
 			var e = 0;
@@ -160,7 +161,7 @@ var Photo = function (aId, aTitle, aIsPrimary, aDescription, aSrc, aThumbnail) {
 				$('#description').hide();
 				if (typeof photo.getLink() !== "undefined") {
 					$("#bigger div#title a").attr("href", photo.getLink());
-					$("#bigger div#title a").attr("title", "Bild auf FlickR ansehen");
+					$("#bigger div#title a").attr("title", "Bild auf " + self.getProvider() + " ansehen");
 				} else {
 					$("#bigger div#title a").attr("href", "#");
 				}
@@ -178,6 +179,7 @@ var Photo = function (aId, aTitle, aIsPrimary, aDescription, aSrc, aThumbnail) {
 			$("#gallery").append(img);
 			img.hide().fadeIn();
 		};
+		this.getProvider = function () {};
 		this.fetchAll = function () {};
 		// finalize
 		return this;
@@ -214,7 +216,7 @@ var Photo = function (aId, aTitle, aIsPrimary, aDescription, aSrc, aThumbnail) {
 								aData = data.photoset.photo[i];
 								imageBasePath = "http://farm" + aData.farm + ".static.flickr.com/" + aData.server + "/"
 									+ aData.id + "_" + aData.secret;
-								p = new Photo(aData.id, aData.title, aData.isprimary === "1", "", imageBasePath + "_z.jpg", imageBasePath + "_s.jpg");
+								p = new Photo(aData.id, aData.title, aData.isprimary === "1", "", imageBasePath + "_z.jpg", imageBasePath + "_t.jpg");
 								p.setLink("http://www.flickr.com/photos/" + aUserName + "/" + aData.id + "/in/set-" + photosetId + "/");
 								clas.addPhoto(p);
 								clas.publishPhoto(p);
@@ -271,10 +273,83 @@ var Photo = function (aId, aTitle, aIsPrimary, aDescription, aSrc, aThumbnail) {
 		clas.fetchAll = function () {
 			translateUserName();
 		};
+		clas.getProvider = function () {
+			return "FlickR";
+		}
 		// finalize
 		return clas;
-	},
-
+	};
+	
+	HTMLDivElement.prototype.gallerify = function (adapterType, apiKey, configuration) {
+		"use strict";
+		// check dependencies
+		if (typeof window.jQuery === "undefined") {
+			throw new Exception("NoSuchMethodException", "jQuery Library is not loaded");
+		}
+		// define type of adapter
+		var clas;
+		if (typeof adapterType === "string" && typeof window[adapterType] !== "undefined") {
+			clas = new window[adapterType](apiKey, configuration);
+		} else if (typeof adapterType === "object") {
+			clas = adapterType;
+		} else if (typeof adapterType === "function") {
+			clas = new adapterType(apiKey, configuration);
+		} else {
+			throw new Exception("NoSuchClassError", "Class \"" + adapterType + "\" not found");
+		}
+		
+		$(this).html(
+			"<div style=\"position: relative; width: 500px; height: 420px\">\
+		<div id=\"bigger\" style=\"position: absolute; bottom: 92px; top: 0;\">\
+		<div id=\"title\" style=\"width: 100%\">\
+				<a href=\"\">&nbsp;</a>\
+			</div>\
+				<a id=\"link\" href=\"\" onmouseover=\"$('#description').fadeIn()\">\
+			<img style=\"width: 500px; max-height: 420px; position: absolute; bottom: 0\" />\
+		<div id=\"up-triangle\"></div>\
+		</div>\
+		<div class=\"gallerybox\" style=\"position: absolute; width: 500px; height: 80px; bottom: 0;\">\
+			<div id=\"left\" onmouseover=\"_scrollLeft()\" onmouseout=\"cancelScroll()\"><img src=\"images/Actions-go-previous-icon.png\" alt=\"Vorheriges Bild anzeigen\" style=\"margin-top:23px; border:none;\"/></div>\
+			<div id=\"right\" onmouseover=\"_scrollRight()\" onmouseout=\"cancelScroll()\">\
+			<img src=\"images/Actions-go-next-icon.png\" alt=\"N&auml;chstes Bild anzeigen\" style=\"margin-top:23px; margin-left:-6px; border:none;\"/></div>\
+			<div id=\"gallery\">&nbsp;</div>\
+		</div>\
+	</div>"
+		);
+		
+		window._scroller = function (isLeft) {
+			"use strict";
+			if (isLeft) {
+				$("#gallery").scrollLeft($("#gallery").scrollLeft() - 1);
+			} else {
+				$("#gallery").scrollLeft($("#gallery").scrollLeft() + 1);
+			}
+		};
+		window._scrollLeft = function (rtl) {
+			"use strict";
+			var interval;
+			if (navigator.userAgent.indexOf("Opera") !== -1) {
+				interval = 5;
+			} else {
+				interval = 1;
+			}
+			if (rtl === false) {
+				window.scroller = setInterval("_scroller(false)", interval);
+			} else {
+				window.scroller = setInterval("_scroller(true)", interval);
+			}
+		};
+		window._scrollRight = function () {
+			"use strict";
+			_scrollLeft(false);
+		};
+		window.cancelScroll = function () {
+			"use strict";
+			clearInterval(window.scroller);
+		};
+		clas.fetchAll();
+	}
+	
 	Gallery = function (adapterType, apiKey, configuration) {
 		"use strict";
 		// check dependencies
