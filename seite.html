@@ -1,13 +1,98 @@
 <!DOCTYPE HTML>
 <html lang="en-US">
 <head>
+	<style>
+	.thumbnail {
+			margin-right: 2px;
+			box-shadow: -1px 2px 2px silver;
+			-webkit-transform: scale(0.8);
+			-o-transform: scale(0.8);
+			-moz-transform: scale(0.8);
+			scale: 0.8;
+		}
+		.thumbnail.active {
+			box-shadow: -1px 3px 3px gray;
+			-webkit-transform: scale(1) !important;
+			-moz-transform: scale(1) !important;
+			-o-transform: scale(1) !important;
+			scale: 1 !important;
+		}
+		.thumbnail:hover {
+			box-shadow: -1px 3px 3px gray;
+			-webkit-transform: scale(0.9);
+			-moz-transform: scale(0.9);
+			-o-transform: scale(0.9);
+			scale: 0.9;
+		}
+		#bigger a {
+			color: #FF8 !important;
+			font-weight: normal !important;
+			text-decoration: none;
+		}
+		#bigger #title a {
+			color: #FFF !important;
+			text-decoration: none;
+			cursor: hand;
+		}
+		#bigger #title {
+			left: 0;
+			position: absolute;
+			width: 496px !important;
+			bottom: 0;
+			background-color: rgba(0, 0, 0, 0.5);
+			padding-bottom: 8px;
+			padding-left: 4px;
+			color: white;
+			font-size: 16pt;
+			z-index: 2;
+		}
+		#bigger #description {
+			display: none;
+			position: absolute;
+			bottom: 80px;
+			left: 0; right: 0;
+			background-color: rgba(0, 0, 0, 0.5);
+			color: white;
+			font-family: 'arial';
+		}
+		#left {
+			position: absolute;
+			left: 0;
+			top: 0;
+			bottom: 0;
+			width: 7%;
+		}
+		#right {
+			text-align: right;
+			position: absolute;
+			right: 0;
+			top: 0;
+			bottom: 0;
+			width: 7%;
+		}
+		#gallery {
+			position: absolute;
+			left: 7%;
+			right: 7%;
+			top: 0;
+			bottom: 0;
+			overflow: hidden;
+			white-space: nowrap;
+		}
+		#up-triangle {
+			width: 0px; 
+			height: 0px; 
+			border-bottom: 10px solid rgba(0,0,0,0.5); 
+			border-left: 10px solid transparent; 
+			border-right: 10px solid transparent; 
+			position:absolute;
+			bottom:32px;
+			left:10px;
+		}
+	</style>
 	<meta charset="UTF-8">
 	<title></title>
-	<link rel="stylesheet" href="./css/prettyPhoto.css" />
-	<link rel="stylesheet" href="./css/pac.css" />
-	<script src="./js/jquery-1.6.1.min.js"></script>
-	<script src="./js/jquery.prettyPhoto.js"></script>
-	<script src="./js/gallery.js"></script>
+	<script src="gallery.js"></script>
 	<script type="text/javascript">
 		$("body").ready(function () {
 			$("#wrapper")[0].gallerify('FlickrAdapter', 'e317e26a00dd06d79b67aa24bd3b9612', {
