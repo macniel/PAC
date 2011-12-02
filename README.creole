@@ -1,4 +1,4 @@
-= PAC version 1.0 =
+= PAC version 1.1 =
 
 Diese //Javascript// Klasse dient der einfachen implementierung von [[http://www.flickr.com/|FlickR]] gestützten
 Gallerien ohne dass IDs, wie etwa für Benutzer und Photosets, verwendet werden müssen.
@@ -29,6 +29,11 @@ Die Klasse wird mit hilfe des konstruktors new Gallery(galleryAdapter, apiKey, c
 Sobald das Gallery Objekt erschaffen wurde werden mit der funktion .fetchAll() die Abfragen gestartet und die Gallerie wird dargestellt.
 
 Ein Beispielcode ist in der Datei //seite.html// zu finden
+
+=== Verwendung nach 1.1 ===
+
+Es ist nun möglich, auf einem DIV Element die Funktion .gallerify auszuführen, dabei wird das standard Markup genommen
+und darauf ein neues Gallery Objekt erzeugt. Die Funktion gallerify erwartet wie der Konstruktor new Gallery die gleichen parameter.
 
 === Verwendung nach 1.0 ===
 
