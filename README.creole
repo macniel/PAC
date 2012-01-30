@@ -30,31 +30,11 @@ Sobald das Gallery Objekt erschaffen wurde werden mit der funktion .fetchAll() d
 
 Ein Beispielcode ist in der Datei //seite.html// zu finden
 
-=== Verwendung nach 1.1 ===
-
 Es ist nun möglich, auf einem DIV Element die Funktion .gallerify auszuführen, dabei wird das standard Markup genommen
 und darauf ein neues Gallery Objekt erzeugt. Die Funktion gallerify erwartet wie der Konstruktor new Gallery die gleichen parameter.
 
-=== Verwendung nach 1.0 ===
-
-Die Konfiguration ist nun vereinfacht worden, erfordert allerdings erneut, dass die Galerie genau wie in der Datei //seite.html// zu sehen ist
-aufgebaut wird.
-
-=== Verwendung nach 0.9 ===
-
-Es ist nun nicht mehr nötig den gesamten Markup zu verwenden, da dieser Batzen HTML Code nun als Default Template
-in der Klasse integriert ist. sollte ein anderes Template erwünscht sein so gibt es nun den Parameter **template** (Zeichenkette)
-der den HTML Code als String an das GalleryTool übergibt.
-
-es ist erforderlich die funktion run mit dem parameter der ID des Zielframes (ein DIV Element) aufzurufen.
-Beispielsweise: 
-{{{
-gallery1.run("wrapper");
-}}}
-Der Rest wird von der Klasse übernommen.
 === Markup ===
-
-Es ist wichtig, dass es folgende Elemente auf der Seite wo eine Gallery eingebunden werden soll existieren.
+Sollte nicht die Funktion .gallerify aufgerufen wird, ist es wichtig, dass es folgende Elemente auf der Seite wo eine Gallery eingebunden werden soll existieren.
 
 
 in diesem wird die größere Ansicht des Bildes angezeigt
@@ -75,17 +55,15 @@ mit diesem wird in der Gallerie //vorwärts// geblättert
 }}}
 
 ==== Beispiel ====
-Das Standard design, wie in //seite.html// zu sehen, sieht das folgende Markup vor:
+
+Das nachfolgende Beispiel erzeugt aus einem leeren DIV eine neue Gallerie für das
+Album 'IBN-Forum Biotechnologische Prozessentwicklung an der Hochschule Bremen' von dem
+Benutzer 'IBN e.V.'.
+
 {{{
-<div id="bigger" style="width:500px">
-    <img style="height:334px" onclick="$.prettyPhoto.open(this.getAttribute('data-biggest'),this.title,this.title);"/>
-    <div/>
-</div>
-<a id="nextBtn" href="javascript:;" style="float:left" onclick="gallery1.slide()">Vorheriges</a> <a href="javascript:;" id="prevBtn" style="float:right" onclick="gallery1.slide()">N&auml;chstes</a>
-<div id="gallery" style="display: inline-block; height: 95px; overflow-y: hidden; overflow-x: auto; width:500px; white-space:nowrap; position: relative;">
-</div>
+$("body").ready(function () {
+    		$("#wrapper")[0].gallerify(new PAC.FlickrAdapter('e317e26a00dd06d79b67aa24bd3b9612', {
+				userName : "IBN e.V.", galleryName : "IBN-Forum Biotechnologische Prozessentwicklung an der Hochschule Bremen"
+			}));
+		});
 }}}
-
-== Besonderheiten der Beispieldatei ==
-Die Verwendung der //seite.html// Datei erfordert eine installation von [[http://www.no-margin-for-errors.com/projects/prettyphoto-jquery-lightbox-clone/|prettyPhoto]] sowie [[http://www.jquery.com|Query]].
-
