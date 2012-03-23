@@ -302,9 +302,9 @@ var PAC = {
 	_scroller : function (isLeft, targetId) {
 		"use strict";
 		if (isLeft) {
-			$("#gallery").scrollLeft($("#" + targetId + "_gallery").scrollLeft() - 1);
+			$("#" + targetId + "_gallery").scrollLeft($("#" + targetId + "_gallery").scrollLeft() - 1);
 		} else {
-			$("#gallery").scrollLeft($("#" + targetId + "_gallery").scrollLeft() + 1);
+			$("#" + targetId + "_gallery").scrollLeft($("#" + targetId + "_gallery").scrollLeft() + 1);
 		}
 	},
 	_scrollLeft : function (rtl, targetId) {
