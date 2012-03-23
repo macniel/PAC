@@ -160,13 +160,13 @@ var PAC = {
 				});
 				$('#' + targetId + '_description').hide();
 				if (typeof photo.getLink() !== "undefined") {
-					$("#" + targtId + "_bigger div#title a").attr("href", photo.getLink());
-					$("#" + targtId + "_bigger div#title a").attr("title", "Bild auf " + self.getProvider() + " ansehen");
+					$("#" + targetId + "_bigger div#title a").attr("href", photo.getLink());
+					$("#" + targetId + "_bigger div#title a").attr("title", "Bild auf " + self.getProvider() + " ansehen");
 				} else {
-					$("#" + targtId + "_bigger div#title a").attr("href", "#");
+					$("#" + targetId + "_bigger div#title a").attr("href", "#");
 				}
-				$("#" + targtId + "_bigger div#title a").text($(this).attr("title"));
-				$("#" + targtId + "_gallery img").removeClass("active");
+				$("#" + targetId + "_bigger div#title a").text($(this).attr("title"));
+				$("#" + targetId + "_gallery img").removeClass("active");
 				$(img).addClass("active");
 				return false;
 			});
@@ -176,7 +176,7 @@ var PAC = {
 				img.click();
 			}
 			photo.bindHTML(img);
-			$("#" + targtId + "_gallery").append(img);
+			$("#" + targetId + "_gallery").append(img);
 			img.hide().fadeIn();
 		};
 		this.getProvider = function () {};
@@ -333,10 +333,11 @@ var PAC = {
 
 HTMLDivElement.prototype.gallerify = function (AdapterType, apiKey, configuration) {
 	"use strict";
+	
 	var id = $(this).attr("id"),
 	    clas = new PAC.Gallery(AdapterType, apiKey, configuration, id);
 	$(this).html(
-		"<div style=\"position: relative; width: 500px; height: 420px\"><div id=\"" + id + "_bigger\" style=\"position: absolute; bottom: 92px; top: 0; text-align: center; width: 500px; height: 328px\"><div id=\"" + id + "_title\" style=\"width: 500px;white-space:nowrap; text-align: left\"><a href=\"\">&nbsp;</a></div><img style=\"max-width: 500px; max-height: 328px; margin: auto 0\" /><div id=\"up-triangle\"></div></div><div class=\"gallerybox\" style=\"position: absolute; width: 500px; height: 80px; bottom: 0;\"><div id=\"" + id + "_left\" onmouseover=\"PAC._scrollLeft(" + id + ")\" onmouseout=\"PAC.cancelScroll(" + id + ")\"><img src=\"images/Actions-go-previous-icon.png\" alt=\"Vorheriges Bild anzeigen\" style=\"margin-top:23px; border:none;\"/></div><div id=\"" + id + "_right\" onmouseover=\"PAC._scrollRight(" + id + ")\" onmouseout=\"PAC.cancelScroll(" + id + ")\"><img src=\"images/Actions-go-next-icon.png\" alt=\"N&auml;chstes Bild anzeigen\" style=\"margin-top:23px; margin-left:-6px; border:none;\"/></div><div id=\"" + id + "_gallery\">&nbsp;</div></div></div>"
+		"<div style=\"position: relative; width: 500px; height: 420px\"><div id=\"" + id + "_bigger\" style=\"position: absolute; bottom: 92px; top: 0; text-align: center; width: 500px; height: 328px\"><div id=\"" + id + "_title\" style=\"width: 500px;white-space:nowrap; text-align: left\"><a href=\"\">&nbsp;</a></div><img style=\"max-width: 500px; max-height: 328px; margin: auto 0\" /><div id=\"up-triangle\"></div></div><div class=\"gallerybox\" style=\"position: absolute; width: 500px; height: 80px; bottom: 0;\"><div id=\"" + id + "_left\" onmouseover=\"PAC._scrollLeft('" + id + "')\" onmouseout=\"PAC.cancelScroll('" + id + "')\"><img src=\"images/Actions-go-previous-icon.png\" alt=\"Vorheriges Bild anzeigen\" style=\"margin-top:23px; border:none;\"/></div><div id=\"" + id + "_right\" onmouseover=\"PAC._scrollRight('" + id + "')\" onmouseout=\"PAC.cancelScroll('" + id + "')\"><img src=\"images/Actions-go-next-icon.png\" alt=\"N&auml;chstes Bild anzeigen\" style=\"margin-top:23px; margin-left:-6px; border:none;\"/></div><div id=\"" + id + "_gallery\">&nbsp;</div></div></div>"
 	);
 	clas.fetchAll();
 };
