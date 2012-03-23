@@ -1,4 +1,4 @@
-= PAC version 1.1 =
+= PAC version 1.1.2 =
 
 Diese //Javascript// Klasse dient der einfachen implementierung von [[http://www.flickr.com/|FlickR]] gestützten
 Gallerien ohne dass IDs, wie etwa für Benutzer und Photosets, verwendet werden müssen.
@@ -9,7 +9,7 @@ Die Installation erfolgt durch das einbinden der //gallery.js// Datei in das Pro
 
 === Abhänigkeiten ===
 
-PAC erfordert die neuste jQuery und prettyPhoto version
+PAC erfordert die neuste Version von jQuery und prettyPhoto
 
 === Kompatibilitätsprobleme zu Bambus CMS ===
 
@@ -62,8 +62,8 @@ Benutzer 'IBN e.V.'.
 
 {{{
 $("body").ready(function () {
-    		$("#wrapper")[0].gallerify(new PAC.FlickrAdapter('e317e26a00dd06d79b67aa24bd3b9612', {
+    		$("#wrapper")[0].gallerify(PAC.FlickrAdapter, 'e317e26a00dd06d79b67aa24bd3b9612', {
 				userName : "IBN e.V.", galleryName : "IBN-Forum Biotechnologische Prozessentwicklung an der Hochschule Bremen"
-			}));
+			});
 		});
 }}}
