@@ -70,11 +70,11 @@ var PAC = {
 		};
 	},
 
-		/**
-		 * The BaseClass GalleryAdapter is an abstract class, which is used to
-		 * display images and manage those from an image provider.
-		 * It can be extended by overriding the privileged function fetchAll
-		 */
+	/**
+	 * The BaseClass GalleryAdapter is an abstract class, which is used to
+	 * display images and manage those from an image provider.
+	 * It can be extended by overriding the privileged function fetchAll
+	 */
 	GalleryAdapter : function () {
 		"use strict";
 		// private
@@ -122,7 +122,7 @@ var PAC = {
 				}
 			}
 		};
-		this.publishPhoto = function (photo) {
+		this.publishPhoto = function (photo, targetId) {
 			var img = $(document.createElement("img"));
 			if (typeof photo.getThumbnail !== "undefined") {
 				img.attr("src", photo.getThumbnail());
@@ -137,17 +137,17 @@ var PAC = {
 			this.addImage(photo.getSource());
 			this.addDescription(photo.getDescription());
 			img.bind("click", function () {
-				$("#bigger img").hide().attr("src", $(this).data("bigger")).load(function () { $(this).fadeIn(); });
-				$("#bigger img").attr("title", $(this).attr("title"));
-				$("#bigger div#description").html($(this).attr("alt"));
+				$("#" + targetId + "_bigger img").hide().attr("src", $(this).data("bigger")).load(function () { $(this).fadeIn(); });
+				$("#" + targetId + "_bigger img").attr("title", $(this).attr("title"));
+				$("#" + targetId + "_bigger div#description").html($(this).attr("alt"));
 				var i = 0;
-				for (i = 0; i < $("#gallery img").length; i = i + 1) {
-					if ($("#gallery img")[i] === this) {
+				for (i = 0; i < $("#" + targetId + "_gallery img").length; i = i + 1) {
+					if ($("#" + targetId + "_gallery img")[i] === this) {
 						break;
 					}
 				}
-				$("#bigger img").data("id", i);
-				$("#bigger img").bind("click", function (evt) {
+				$("#" + targetId + "_bigger img").data("id", i);
+				$("#" + targetId + "_bigger img").bind("click", function (evt) {
 					var j = 0,
 						id;
 					if ($("div.ppt:visible").length === 0) {
@@ -158,15 +158,15 @@ var PAC = {
 						}
 					}
 				});
-				$('#description').hide();
+				$('#' + targetId + '_description').hide();
 				if (typeof photo.getLink() !== "undefined") {
-					$("#bigger div#title a").attr("href", photo.getLink());
-					$("#bigger div#title a").attr("title", "Bild auf " + self.getProvider() + " ansehen");
+					$("#" + targtId + "_bigger div#title a").attr("href", photo.getLink());
+					$("#" + targtId + "_bigger div#title a").attr("title", "Bild auf " + self.getProvider() + " ansehen");
 				} else {
-					$("#bigger div#title a").attr("href", "#");
+					$("#" + targtId + "_bigger div#title a").attr("href", "#");
 				}
-				$("#bigger div#title a").text($(this).attr("title"));
-				$("#gallery img").removeClass("active");
+				$("#" + targtId + "_bigger div#title a").text($(this).attr("title"));
+				$("#" + targtId + "_gallery img").removeClass("active");
 				$(img).addClass("active");
 				return false;
 			});
@@ -176,7 +176,7 @@ var PAC = {
 				img.click();
 			}
 			photo.bindHTML(img);
-			$("#gallery").append(img);
+			$("#" + targtId + "_gallery").append(img);
 			img.hide().fadeIn();
 		};
 		this.getProvider = function () {};
@@ -191,13 +191,14 @@ var PAC = {
 	 * the configuration is supposed to be an array, where parameters are set.
 	 * @returns FlickrAdapter
 	 */
-	FlickrAdapter : function (apiKey, configuration) {
+	FlickrAdapter : function (apiKey, targetId, configuration) {
 		"use strict";
 		// inheritage
 		var clas = new PAC.GalleryAdapter(),
 		// private fields and functions
 			galleryName = configuration.galleryName,
 			aUserName = configuration.userName,
+			aTarget = targetId,
 			aBaseUrl = "http://api.flickr.com/services/rest/?",
 			userId,
 			photosetId,
@@ -225,7 +226,7 @@ var PAC = {
 								p = new PAC.Photo(aData.id, aData.title, aData.isprimary === "1", "", imageBasePath + "_z.jpg", imageBasePath + "_s.jpg");
 								p.setLink("http://www.flickr.com/photos/" + aUserName + "/" + aData.id + "/in/set-" + photosetId + "/");
 								clas.addPhoto(p);
-								clas.publishPhoto(p);
+								clas.publishPhoto(p, targetId);
 								$.getJSON(aBaseUrl + "method=flickr.photos.getInfo&api_key=" + key + "&photo_id=" + aData.id + "&format=json&jsoncallback=?", descriptionCallback);
 							}
 						}
@@ -277,7 +278,7 @@ var PAC = {
 		// finalize
 		return clas;
 	},
-	Gallery : function (AdapterType, apiKey, configuration) {
+	Gallery : function (AdapterType, apiKey, configuration, targetId) {
 		"use strict";
 		// check dependencies
 		if (typeof window.jQuery === "undefined") {
@@ -286,11 +287,11 @@ var PAC = {
 		// define type of adapter
 		var clas;
 		if (typeof AdapterType === "string" && typeof window[AdapterType] !== "undefined") {
-			clas = new window[AdapterType](apiKey, configuration);
+			clas = new window[AdapterType](apiKey, targetId, configuration);
 		} else if (typeof AdapterType === "object") {
 			clas = AdapterType;
 		} else if (typeof AdapterType === "function") {
-			clas = new AdapterType(apiKey, configuration);
+			clas = new AdapterType(apiKey, targetId, configuration);
 		} else {
 			throw new PAC.Exception("NoSuchClassError", "Class \"" + AdapterType + "\" not found");
 		}
@@ -298,15 +299,15 @@ var PAC = {
 		// finalize
 		return clas;
 	},
-	_scroller : function (isLeft) {
+	_scroller : function (isLeft, targetId) {
 		"use strict";
 		if (isLeft) {
-			$("#gallery").scrollLeft($("#gallery").scrollLeft() - 1);
+			$("#gallery").scrollLeft($("#" + targetId + "_gallery").scrollLeft() - 1);
 		} else {
-			$("#gallery").scrollLeft($("#gallery").scrollLeft() + 1);
+			$("#gallery").scrollLeft($("#" + targetId + "_gallery").scrollLeft() + 1);
 		}
 	},
-	_scrollLeft : function (rtl) {
+	_scrollLeft : function (rtl, targetId) {
 		"use strict";
 		var interval;
 		if (navigator.userAgent.indexOf("Opera") !== -1) {
@@ -315,26 +316,27 @@ var PAC = {
 			interval = 1;
 		}
 		if (rtl === false) {
-			window.scroller = setInterval(function () { PAC._scroller(false); }, interval);
+			window.scroller = setInterval(function () { PAC._scroller(false, targetId); }, interval);
 		} else {
-			window.scroller = setInterval(function () { PAC._scroller(true); }, interval);
+			window.scroller = setInterval(function () { PAC._scroller(true, targetId); }, interval);
 		}
 	},
-	_scrollRight : function () {
+	_scrollRight : function (targetId) {
 		"use strict";
-		PAC._scrollLeft(false);
+		PAC._scrollLeft(false, targetId);
 	},
-	cancelScroll : function () {
+	cancelScroll : function (targetId) {
 		"use strict";
-		clearInterval(window.scroller);
+		clearInterval(window.scroller, targetId);
 	}
 };
 
 HTMLDivElement.prototype.gallerify = function (AdapterType, apiKey, configuration) {
 	"use strict";
-	var clas = new PAC.Gallery(AdapterType, apiKey, configuration);
+	var id = $(this).attr("id"),
+	    clas = new PAC.Gallery(AdapterType, apiKey, configuration, id);
 	$(this).html(
-		"<div style=\"position: relative; width: 500px; height: 420px\"><div id=\"bigger\" style=\"position: absolute; bottom: 92px; top: 0; text-align: center; width: 500px; height: 328px\"><div id=\"title\" style=\"width: 500px;white-space:nowrap; text-align: left\"><a href=\"\">&nbsp;</a></div><img style=\"max-width: 500px; max-height: 328px; margin: auto 0\" /><div id=\"up-triangle\"></div></div><div class=\"gallerybox\" style=\"position: absolute; width: 500px; height: 80px; bottom: 0;\"><div id=\"left\" onmouseover=\"PAC._scrollLeft()\" onmouseout=\"PAC.cancelScroll()\"><img src=\"images/Actions-go-previous-icon.png\" alt=\"Vorheriges Bild anzeigen\" style=\"margin-top:23px; border:none;\"/></div><div id=\"right\" onmouseover=\"PAC._scrollRight()\" onmouseout=\"PAC.cancelScroll()\"><img src=\"images/Actions-go-next-icon.png\" alt=\"N&auml;chstes Bild anzeigen\" style=\"margin-top:23px; margin-left:-6px; border:none;\"/></div><div id=\"gallery\">&nbsp;</div></div></div>"
+		"<div style=\"position: relative; width: 500px; height: 420px\"><div id=\"" + id + "_bigger\" style=\"position: absolute; bottom: 92px; top: 0; text-align: center; width: 500px; height: 328px\"><div id=\"" + id + "_title\" style=\"width: 500px;white-space:nowrap; text-align: left\"><a href=\"\">&nbsp;</a></div><img style=\"max-width: 500px; max-height: 328px; margin: auto 0\" /><div id=\"up-triangle\"></div></div><div class=\"gallerybox\" style=\"position: absolute; width: 500px; height: 80px; bottom: 0;\"><div id=\"" + id + "_left\" onmouseover=\"PAC._scrollLeft(" + id + ")\" onmouseout=\"PAC.cancelScroll(" + id + ")\"><img src=\"images/Actions-go-previous-icon.png\" alt=\"Vorheriges Bild anzeigen\" style=\"margin-top:23px; border:none;\"/></div><div id=\"" + id + "_right\" onmouseover=\"PAC._scrollRight(" + id + ")\" onmouseout=\"PAC.cancelScroll(" + id + ")\"><img src=\"images/Actions-go-next-icon.png\" alt=\"N&auml;chstes Bild anzeigen\" style=\"margin-top:23px; margin-left:-6px; border:none;\"/></div><div id=\"" + id + "_gallery\">&nbsp;</div></div></div>"
 	);
 	clas.fetchAll();
 };
