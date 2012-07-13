@@ -310,6 +310,10 @@ var PAC = {
 	_scrollLeft : function (rtl, targetId) {
 		"use strict";
 		var interval;
+		if ( typeof targetId === "undefined" ) {
+                        targetId = rtl;
+                        rtl = true;
+                }
 		if (navigator.userAgent.indexOf("Opera") !== -1) {
 			interval = 5;
 		} else {
