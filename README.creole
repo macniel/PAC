@@ -1,4 +1,4 @@
-= PAC version 1.1.3 =
+= PAC version 1.2 =
 
 Diese //Javascript// Klasse dient der einfachen implementierung von [[http://www.flickr.com/|FlickR]] gestützten
 Gallerien ohne dass IDs, wie etwa für Benutzer und Photosets, verwendet werden müssen.
@@ -6,6 +6,11 @@ Gallerien ohne dass IDs, wie etwa für Benutzer und Photosets, verwendet werden 
 == Installation ==
 
 Die Installation erfolgt durch das einbinden der //gallery.js// Datei in das Projekt.
+
+=== Für FlickR ===
+
+Da PAC nun authentifizierte JSON Aufrufe an FlickR senden kann ist es erforderlich einen FROB sowie einen AUTH_TOKEN
+zu generieren. Der geheime Schlüssel muss nachträglich eingetragen werden und kann auf der FlickR seite nachgeschlagen werden.
 
 === Abhänigkeiten ===
 
