@@ -67,8 +67,8 @@ Benutzer 'IBN e.V.'.
 
 {{{
 $("body").ready(function () {
-    		$("#wrapper")[0].gallerify(PAC.FlickrAdapter, 'e317e26a00dd06d79b67aa24bd3b9612', {
-				userName : "IBN e.V.", galleryName : "IBN-Forum Biotechnologische Prozessentwicklung an der Hochschule Bremen"
+    		$("#wrapper")[0].gallerify(PAC.FlickrAdapter, '<KEY_HERE>', {
+				userName : "<Eigentümer der Gallerie>", galleryName : "<Gallerienname>"
 			});
 		});
 }}}
